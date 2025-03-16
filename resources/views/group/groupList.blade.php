@@ -8,20 +8,20 @@
                 <!--begin::Row-->
                 <div class="row">
                     <div class="col-md-2 col-sm-12">
-                        <h3 class="mb-2">قائمة الطلاب</h3>
+                        <h3 class="mb-2">قائمة المجموعات</h3>
                     </div>
                     <div class="col-md-2 col-sm-12 ">
                     </div>
                     <div class="col-md-4 col-sm-12 mb-2">
-                        <input type="text" class="form-control w-100" placeholder="إبحث بإسم الطالب">
+                        <input type="text" class="form-control w-100" placeholder="إبحث بإسم المجموعة">
                     </div>
                     <div class="col-md-1 col-sm-12 ">
                     </div>
                     <div class="col-md-3 col-sm-12 ">
                         <div class="d-flex ml-3 justify-content-center justify-content-md-end ">
                             <button class="btn btn-success" style="margin-left:5px"
-                                onclick="location.href='/student/create'">إضافة طالب جديد</button>
-                            <button class="btn btn-primary" style="margin-left:15px">إضافة طالب جديد</button>
+                                onclick="location.href='/group/create'">إضافة مجموعة جديد</button>
+                            <button class="btn btn-primary" style="margin-left:15px">إضافة مجموعة جديد</button>
                         </div>
                     </div>
 
@@ -44,21 +44,22 @@
                             <!-- /.card-header -->
                             <div class="card-body p-0 ">
                                 <div class="row text-center m-1">
-                                    @if (!empty($students))
-                                        @foreach ($students as $student)
-                                            <div class="col-md-2 col-sm-4 m-md-1" style="background:#f1f1f1">
+                                    @if (!empty($groups))
+                                        @foreach ($groups as $group)
+                                            <div class="col-md-2 col-sm-4 m-md-1 pt-2" style="background:#f1f1f1">
                                                 <img class="img-fluid rounded-circle" style="height:20vh;width:20vh "
-                                                    src="{{ $student->image ? asset('storage/' . $student->image) : asset('adminlte/dist/assets/img/student.png') }}"
-                                                    onerror="this.src='{{ asset('adminlte/dist/assets/img/student.png') }}';this.onerror=null;"
+                                                    src="{{ $group->image ? asset('storage/' . $group->image) : asset('adminlte/dist/assets/img/group.png') }}"
+                                                    onerror="this.src='{{ asset('adminlte/dist/assets/img/group.png') }}';this.onerror=null;"
                                                     alt="User Image" />
 
                                                 <a class="btn fw-bold fs-7 text-secondary text-truncate w-100 p-0"
                                                     href="#">
-                                                    {{ $student->name . ' ' . $student->family_name }}
+                                                    {{ $group->name . ' ' . $group->family_name }}
                                                 </a>
                                                 <div class=" mb-1 p-1 d-flex justify-content-evenly">
-                                                    <button class="btn btn-primary ">
-                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    <button class="btn btn-info text-light"
+                                                        onclick="location.href='/group/{{ $group->id }}'">
+                                                        <i class="bi bi-eye" style="font-size:1rem"></i>
                                                     </button>
                                                     <button class="btn btn-primary ">
                                                         <i class="bi bi-journal-text" style="font-size:1rem"></i>
@@ -88,7 +89,7 @@
                                         </div>
                                     @else
                                         <div class="col-12 p-5">
-                                            <h1 class="alert alert-info">يرجى إضافة طلبة للبدء</h1>
+                                            <h1 class="alert alert-info">يرجى إضافة مجموعة للبدء</h1>
                                         </div>
                                     @endif
                                 </div>

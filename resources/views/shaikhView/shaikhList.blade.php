@@ -54,7 +54,7 @@
                                             <div class="col-md-2 col-sm-4 p-2">
                                                 <img class="img-fluid rounded-circle" style="height:20vh;width:20vh "
                                                     src="{{ $shaikh->image ? asset('storage/' . $shaikh->image) : asset('adminlte/dist/assets/img/avatar.png') }}"
-                                                    onerror="this.src='{{ asset('adminlte/dist/assets/img/avatar.png') }}'"
+                                                    onerror="this.src='{{ asset('adminlte/dist/assets/img/avatar.png') }}';this.onerror=null;"
                                                     alt="User Image" />
 
                                                 <a class="btn fw-bold fs-7 text-secondary text-truncate w-100 p-0"

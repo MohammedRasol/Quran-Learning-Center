@@ -4,12 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GroupRequest extends FormRequest
+class ClassRoomRequest extends FormRequest
 {
-    private const MAX_TEXT_LENGTH = 255;
-    private const MAX_IMAGE_SIZE = 2048; // in KB
-    private const IMAGE_MIMES = 'png,jpg,jpeg,gif';
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,13 +22,13 @@ class GroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:' . self::MAX_TEXT_LENGTH],
-            'image' => [
-                'nullable',
-                'image',
-                'mimes:' . self::IMAGE_MIMES,
-                'max:' . self::MAX_IMAGE_SIZE
-            ],
+            'group_id' => 'required|exists:groups,id',
+            'name' => 'required|string|max:255',
+            'nick_name' => 'nullable|string|max:255',
+            'start_date' => 'nullable|date',
+            'closed_date' => 'nullable|date|after_or_equal:start_date',
+            'image' => 'nullable|image|max:2048',
+            'graduated' => 'nullable|integer|in:0,1',
         ];
     }
 }

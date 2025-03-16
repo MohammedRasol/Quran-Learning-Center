@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
             "password" => '$2y$12$Ljh/O7JP0j5ann66RPwt0.0HXKdrSLXNOfZMipNPcNS2cHW6FMWRG'
         ]);
         $this->call(StudentSeeder::class);
+        $this->call(GroupSeeder::class);
+        $this->call(ClassRoomSeeder::class);
 
     }
 }

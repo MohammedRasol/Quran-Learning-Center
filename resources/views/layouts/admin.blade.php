@@ -262,10 +262,16 @@
                             </a>
                         </li>
 
-                        <li class="nav-item {{ request()->path() == 'groups' ? 'menu-open' : '' }}">
-                            <a href="/groups" class="nav-link">
+                        <li class="nav-item {{ request()->path() == 'group' ? 'menu-open' : '' }}">
+                            <a href="/group" class="nav-link">
                                 <i class="bi bi-people"></i>
                                 <p>المجموعات</p>
+                            </a>
+                        </li>
+                        <li class="nav-item {{ request()->path() == 'class-room' ? 'menu-open' : '' }}">
+                            <a href="/class-room" class="nav-link">
+                                <i class="bi bi-people"></i>
+                                <p>الغرف الصفية</p>
                             </a>
                         </li>
 

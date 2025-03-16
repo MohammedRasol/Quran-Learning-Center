@@ -7,7 +7,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">إضافة طالب جديد</h3>
+                        <h3 class="mb-0">معلومات : <strong> <u class="text-success">{{ $classroom->name }}</strong></u></h3>
                     </div>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                         <div class="card card-info card-outline">
                             <!-- Card Header -->
                             <div class="card-header">
-                                <h5 class="card-title">معلومات المجوعة
+                                <h5 class="card-title">معلومات الغرفة الصفية
                                     @if (session('success'))
                                         <div class="alert alert-success">
                                             {{ session('success') }}
@@ -39,23 +39,37 @@
                             </div>
 
                             <!-- Card Body with Form -->
-                            <form method="POST" enctype="multipart/form-data" action="/groups" autocomplete="off"
-                                id="form">
+                            <form method="POST" enctype="multipart/form-data" action="/class-room/{{ $classroom->id }}"
+                                autocomplete="off" id="form">
+                                @method('PUT')
                                 @csrf
                                 <div class="card-body">
                                     <div class="row g-4">
-                                        <!-- First Name -->
                                         <div class="col-md-4">
-                                            <label for="name" class="form-label">الإسم المجموعة</label>
+                                            <label for="name" class="form-label">إسم الغرفة الصفية</label>
                                             <input type="text" class="form-control" id="name" spellcheck="false"
-                                                autocomplete="one-time-code" required name="name"
-                                                value="{{ old('name') }}" required>
+                                                autocomplete="one-time-code" name="name" value="{{ $classroom->name }}"
+                                                required>
+                                            @error('name')
+                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-12"></div>
+                                        <div class="col-md-4">
+                                            <label for="name" class="form-label">الصفوف المرتبطة بالمجموعة</label>
+                                            <select class="form-select" multiple aria-label="multiple select example" name="group_id">
+                                                @foreach ($groups as $group)
+                                                    <option {{ $classroom->group_id == $group->id ? 'selected' : '' }}
+                                                        value='{{ $group->id }}'>
+                                                        {{ $group->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                             @error('name')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
                                         </div>
 
-                           
                                         <div class="col-md-12">
                                             <div class="col-md-3 col-sm-12">
                                                 <label for="fileInput" class="form-label">صورة المجموعة</label>
@@ -63,8 +77,9 @@
                                                     <input type="file" class="form-control d-none" id="fileInput"
                                                         accept="image/*" name="image">
                                                     <p class="mb-0">إسحب الصورة إلى هنا أو قم بالنقر لتصفح الصور</p>
-                                                    <img id="preview" class="mt-3 img-fluid d-none" width="200"
-                                                        height="200" style="max-height: 200px;" alt="Preview">
+                                                    <img id="preview" class="mt-3 img-fluid  " width="200"
+                                                        src="{{ asset('storage/' . $classroom->image) }}" height="200"
+                                                        style="max-height: 200px;" alt="Preview">
                                                 </div>
                                             </div>
                                             @error('image')
@@ -77,7 +92,7 @@
                                 <!-- Card Footer -->
                                 <div class="card-footer ">
                                     <div class=" col-md-2 col-sm-12 ">
-                                        <button class="btn btn-success w-100" type="submit">إضافة الشيخ</button>
+                                        <button class="btn btn-primary w-100" type="submit">تعديل الغرفة الصفية</button>
                                     </div>
                                 </div>
                             </form>
