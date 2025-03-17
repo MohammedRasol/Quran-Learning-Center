@@ -38,10 +38,7 @@
                                     @endif
                                 </h5>
                             </div>
-                            {{-- start_date --}}
-                            {{-- closed_date --}}
-                            {{-- image --}}
-                            {{-- graduated --}}
+
                             <!-- Card Body with Form -->
                             <form method="POST" enctype="multipart/form-data" action="/class-room" autocomplete="off"
                                 id="form">
@@ -70,41 +67,46 @@
                                         </div>
                                         <div class="col-md-4">
                                         </div>
-
                                         <div class="col-md-4">
-                                            <label for="name" class="form-label">الصفوف المرتبطة بالمجموعة</label>
-                                            <select class="form-select" multiple aria-label="multiple select example"
-                                                name="group_id">
+                                            <label for="shaikh_id" class="form-label">الشيخ المسؤول</label>
+                                            <select class="form-select" name="shaikh_id" required>
+                                                <option value="">إختر الشيخ</option>
+                                                @foreach ($shaikhs as $shaikh)
+                                                    <option value='{{ $shaikh->id }}'>
+                                                        {{ $shaikh->name . ' ' . $shaikh->last_name . ' ' . $shaikh->family_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('shaikh_id')
+                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="group_id" class="form-label"> مرتبط بالمجموعة</label>
+                                            <select class="form-select"  name="group_id" required> 
+                                                <option value="">إختر المجموعة</option>
+
                                                 @foreach ($groups as $group)
                                                     <option value='{{ $group->id }}'>
                                                         {{ $group->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            @error('name')
+                                            @error('group_id')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label for="name" class="form-label">تاريخ بداية التدريس</label>
-                                            <input type="date" class="form-control" id="name" spellcheck="false"
-                                                autocomplete="one-time-code" required name="name"
-                                                value="{{ old('name') }}" required>
-                                            @error('name')
+                                            <label for="start_date" class="form-label">تاريخ بداية التدريس</label>
+                                            <input type="date" class="form-control" id="start_date" spellcheck="false"
+                                                autocomplete="one-time-code" required name="start_date"
+                                                value="{{ old('start_date') }}" required>
+                                            @error('start_date')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
                                         </div>
 
-                                        <div class="col-md-4">
-                                            <label for="nick_name" class="form-label"> تاريخ نهاية التدريس </label>
-                                            <input type="date" class="form-control" id="nick_name" spellcheck="false"
-                                                autocomplete="one-time-code" required name="nick_name"
-                                                value="{{ old('nick_name') }}" required>
-                                            @error('nick_name')
-                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
-                                            @enderror
-                                        </div>
                                         <div class="col-md-12">
                                             <div class="col-md-3 col-sm-12">
                                                 <label for="fileInput" class="form-label">صورة الغرفة الصفية</label>

@@ -7,12 +7,14 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">تعديل معلومات الشيخ</h3>
+                        <h3 class="mb-0">تعديل معلومات الشيخ : <u><strong
+                                    class="text-success">{{ $shaikh->name . ' ' . $shaikh->last_name . ' ' . $shaikh->family_name }}</strong></u>
+                        </h3>
                     </div>
                 </div>
             </div>
         </div>
-        {{-- @if ($errors->all())
+        @if ($errors->all())
             <div style="color: red;">
                 <ul>
                     @foreach ($errors->all() as $error)
@@ -20,7 +22,7 @@
                     @endforeach
                 </ul>
             </div>
-        @endif --}}
+        @endif
         <!-- App Content -->
         <div class="app-content" style="overflow-y: auto; height: fit-content; max-height: 80vh; min-height: 80vh;">
             <div class="container-fluid">
@@ -39,8 +41,10 @@
                             </div>
 
                             <!-- Card Body with Form -->
-                            <form method="POST" enctype="multipart/form-data" action="/shaikh" autocomplete="off">
+                            <form method="POST" enctype="multipart/form-data" action="/shaikh/{{ $shaikh->id }}"
+                                autocomplete="off">
                                 @csrf
+                                @method('put')
                                 <div class="card-body">
                                     <div class="row g-4">
                                         <!-- First Name -->
@@ -48,7 +52,7 @@
                                             <label for="name" class="form-label">الإسم الأول</label>
                                             <input type="text" class="form-control" id="name" spellcheck="false"
                                                 autocomplete="one-time-code" required name="name"
-                                                value="{{ old('name') }}" required>
+                                                value="{{ $shaikh->name }}" required>
                                             @error('name')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
@@ -59,7 +63,7 @@
                                             <label for="last-name" class="form-label">الإسم الأخير</label>
                                             <input type="text" class="form-control" id="last-name"
                                                 autocomplete="one-time-code" name="last_name"
-                                                value="{{ old('last_name') }}">
+                                                value="{{ $shaikh->last_name }}">
                                             @error('last_name')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
@@ -70,47 +74,20 @@
                                             <label for="family-name" class="form-label">إسم العائلة</label>
                                             <input type="text" class="form-control" id="family-name"
                                                 autocomplete="one-time-code" name="family_name"
-                                                value="{{ old('family_name') }}">
+                                                value="{{ $shaikh->family_name }}">
                                             @error('family_name')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
                                         </div>
 
-                                        <!-- Username -->
-                                        {{-- <div class="col-md-4">
-                                            <label for="user-name" class="form-label">
-                                                إسم المستخدم <small class="text-muted">(تسجيل الدخول من خلاله)</small>
-                                            </label>
-                                            <div class="input-group">
-                                                <button class="btn btn-primary" type="button"
-                                                    onclick="generateUserName(1)">إنشاء</button>
-                                                <input type="text" class="form-control" id="user-name"
-                                                    autocomplete="one-time-code" name="user_name"
-                                                    value="{{ old('user_name') }}" required>
+                                        <div class="col-md-4">
+                                            <label for="family-name" class="form-label">مسؤول عن : </label>
+                                            <div class="alert alert-info d-flex">
+                                                <div>{{ $shaikh->classroom?$shaikh->classroom->name:'لا يوجد غرف صفية مرتبطة'}}</div>
+                                                <div>{{ $shaikh->classroom?$shaikh->classroom->start_date:''}}</div>
                                             </div>
-                                            @error('user_name')
-                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
-                                            @enderror
-                                        </div> --}}
-
-                                        <!-- Password -->
-                                        <div class="col-md-4">
-
-                                            <label for="password" class="form-label">كلمة المرور</label>
-
-                                            <input type="password" class="form-control" id="password" name="password"
-                                                autocomplete="one-time-code" required>
-                                            @error('password')
-                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
-                                            @enderror
                                         </div>
 
-                                        <!-- Password Confirmation -->
-                                        <div class="col-md-4">
-                                            <label for="password_confirmation" class="form-label">تأكيد كلمة المرور</label>
-                                            <input type="password" class="form-control" id="password_confirmation" required
-                                                autocomplete="one-time-code" name="password_confirmation">
-                                        </div>
 
                                         <!-- Profile Image -->
                                         <div class="col-md-12">
@@ -120,8 +97,9 @@
                                                     <input type="file" class="form-control d-none" id="fileInput"
                                                         accept="image/*" name="image">
                                                     <p class="mb-0">إسحب الصورة إلى هنا أو قم بالنقر لتصفح الصور</p>
-                                                    <img id="preview" class="mt-3 img-fluid d-none" width="200"
-                                                        height="200" style="max-height: 200px;" alt="Preview">
+                                                    <img id="preview" class="mt-3 img-fluid" width="200"
+                                                        src="{{ asset('storage/' . $shaikh->image) }}" height="200"
+                                                        style="max-height: 200px;" alt="Preview">
                                                 </div>
                                             </div>
                                             @error('image')
@@ -134,7 +112,7 @@
                                 <!-- Card Footer -->
                                 <div class="card-footer ">
                                     <div class=" col-md-2 col-sm-12 ">
-                                        <button class="btn btn-success w-100" type="submit">إضافة الشيخ</button>
+                                        <button class="btn btn-success w-100" type="submit">تعديل معلومات الشيخ</button>
                                     </div>
                                 </div>
                             </form>

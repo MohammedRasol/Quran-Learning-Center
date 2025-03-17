@@ -15,7 +15,7 @@ class GroupSeeder extends Seeder
     {
         $roles = [
             [
-                "name" => "المجموعة الاولى",
+                "name" => "المجموعة العامة",
                 "image" => "public\adminlte\dist\assets\img\AdminLTELogo.png"
             ]
         ];

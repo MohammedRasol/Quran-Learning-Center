@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ShaikhRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ShaikhController extends Controller
 {
@@ -43,14 +44,12 @@ class ShaikhController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
-        //
+        $shaikh = User::findOrFail($id);
+        return view("shaikhView.showShaikh", compact("shaikh"));
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -62,9 +61,30 @@ class ShaikhController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request,  $id)
     {
-        //
+        $request->validate([
+            "name" => "string|required|max:255",
+            "last_name" => "nullable|string|max:255",
+            "family_name" => "nullable|string|max:255",
+            "image" => "nullable|mimes:png,jpg,jpeg,gif|max:2048",
+        ]);
+
+        $shaikh = User::findOrFail($id);
+        $shaikh->name = $request->name;
+        $shaikh->last_name = $request->last_name;
+        $shaikh->family_name = $request->family_name;
+
+        if ($request->has("image")) {
+            if ($shaikh->image) {
+                Storage::disk('public')->delete($shaikh->image);
+            }
+            $imagePath = $request->file("image")->store("images", "public");
+            $shaikh->image = $imagePath;
+        }
+
+        $res = $shaikh->save();
+        return redirect()->back()->with("success", "تم تعديل معلومات الشيخ");
     }
 
     /**

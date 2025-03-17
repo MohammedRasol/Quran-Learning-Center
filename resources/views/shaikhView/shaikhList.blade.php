@@ -61,6 +61,21 @@
                                                     href="#">
                                                     {{ $shaikh->name . ' ' . $shaikh->family_name }}
                                                 </a>
+                                                <div class=" mb-1 p-1 d-flex justify-content-evenly">
+                                                    <button class="btn btn-info text-light"
+                                                        onclick="location.href='/shaikh/{{ $shaikh->id }}'">
+                                                        <i class="bi bi-eye" style="font-size:1rem"></i>
+                                                    </button>
+                                                    <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button> <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button> <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button> <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         @endforeach
 
@@ -77,9 +92,9 @@
                                             style="visibility: hidden;height:20vh;width:20vh ">
                                         </div>
                                     @else
-                                      <div class="col-12 p-5">
+                                        <div class="col-12 p-5">
                                             <h1 class="alert alert-info">يرجى إضافة شيوخ للبدء</h1>
-                                      </div>
+                                        </div>
                                     @endif
 
                                 </div>

@@ -18,10 +18,11 @@ class ClassRoomSeeder extends Seeder
                 "name" => "الصف الاول",
                 "image" => "public\adminlte\dist\assets\img\AdminLTELogo.png",
                 "group_id" => 1,
+                "user_id" => 2
             ]
         ];
         foreach ($roles as $key => $value) {
-            Classroom::create(["name" => $value["name"], "image" => $value["image"], "group_id" => $value["group_id"]]);
+            Classroom::create($roles[0]);
         }
     }
 }

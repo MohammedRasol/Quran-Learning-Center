@@ -23,6 +23,7 @@ class ClassRoomRequest extends FormRequest
     {
         return [
             'group_id' => 'required|exists:groups,id',
+            'shaikh_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
             'nick_name' => 'nullable|string|max:255',
             'start_date' => 'nullable|date',

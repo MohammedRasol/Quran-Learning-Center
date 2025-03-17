@@ -65,4 +65,7 @@ class User extends Authenticatable
 
         return $username;
     }
+    function classRoom()  {
+        return $this->hasOne(Classroom::class);
+    }
 }

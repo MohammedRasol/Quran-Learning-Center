@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClassRoomRequest;
 use App\Models\Classroom;
 use App\Models\Group;
+use App\Models\User;
+use Database\Seeders\ClassRoomSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,8 +26,9 @@ class ClassroomController extends Controller
      */
     public function create()
     {
-        $groups = Group::where("graduated", 0)->get();
-        return view('classroom.addClassRoom', compact('groups'));
+        $groups = Group::where("graduated", 0)->doesntHave('classroom')->get();
+        $shaikhs = User::doesntHave("classRoom")->where("role", 2)->get();
+        return view('classroom.addClassRoom', compact('groups', "shaikhs"));
     }
 
     /**
@@ -33,14 +36,20 @@ class ClassroomController extends Controller
      */
     public function store(ClassRoomRequest $request)
     {
+        $classroom = new Classroom();
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('classrooms', 'public');
+            $classroom->image = $request->file('image')->store('classrooms', 'public');
         }
+        $classroom->group_id = $request->group_id;
+        $classroom->user_id = $request->shaikh_id;
+        $classroom->name = $request->name;
+        $classroom->nick_name = $request->nick_name;
+        $classroom->start_date = $request->start_date;
+        $classroom->closed_date = $request->closed_date;
+        $classroom->save();
 
-        Classroom::create($request);
-
-        return redirect()->route('classrooms.index')
-            ->with('success', 'Classroom created successfully.');
+        return redirect('class-room/' . $classroom->id)
+            ->with('success', 'تم إضافة الغرفة الصفية بنجاح.');
     }
 
     /**
@@ -49,8 +58,14 @@ class ClassroomController extends Controller
     public function show($id)
     {
         $classroom = Classroom::findOrFail($id);
-        $groups = Group::where("graduated", 0)->get();
-        return view('classroom.showClassRoom', compact('classroom', "groups"));
+        $groups = Group::where("graduated", 0)->doesntHave('classroom')->orWhere('id', $classroom->group_id)->get();
+        $shaikhs = User::where(function ($query) use ($classroom) {
+            $query->doesntHave('classRoom')
+                  ->orWhere("id", $classroom->user_id);
+        })
+        ->where("role", 2)
+        ->get();
+            return view('classroom.showClassRoom', compact('classroom', "groups", "shaikhs"));
     }
 
     /**
@@ -58,26 +73,29 @@ class ClassroomController extends Controller
      */
     public function edit(Classroom $classroom)
     {
-        $groups = Group::all();
+        $groups = Group::where("graduated", 0)->get();
         return view('classrooms.edit', compact('classroom', 'groups'));
     }
 
     /**
      * Update the specified classroom in storage.
      */
-    public function update(ClassRoomRequest $request, Classroom $classroom)
+    public function update(ClassRoomRequest $request, $id)
     {
+        $classroom = Classroom::findOrFail($id);
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($classroom->image) {
                 Storage::disk('public')->delete($classroom->image);
             }
             $classroom->image = $request->file('image')->store('images', 'public');
         }
-        $classroom->name=$request->name;
-        $classroom->group_id=$request->group_id;
+        $classroom->name = $request->name;
+        $classroom->nick_name = $request->nick_name;
+        $classroom->group_id = $request->group_id;
+        $classroom->user_id = $request->shaikh_id;
+        $classroom->start_date = $request->start_date;
         $classroom->save();
-        return redirect("class-room/$classroom->id")->with('success', 'تم تحديث معلومات الغرفة الصفية بنجاح.');
+        return redirect()->back()->with('success', 'تم تحديث معلومات الغرفة الصفية بنجاح.');
     }
 
     /**

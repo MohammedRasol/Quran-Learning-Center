@@ -56,12 +56,14 @@
                                         </div>
                                         <div class="col-12"></div>
                                         <div class="col-md-4">
-                                            <label for="name" class="form-label">الصفوف المرتبطة بالمجموعة</label>
-                                            <select class="form-select" multiple aria-label="multiple select example">
-                                                <option selected>Open this select menu</option>
-                                                <option value="1">One</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
+                                            <label for="name" class="form-label">الغرف الصفية المرتبطة بالمجموعة</label>
+                                            <select class="form-select" name="class_rom_id[]"   multiple>
+                                                <option value="">إختر الغرف الصفية</option>
+                                                @foreach ($classrooms as $classroom)
+                                                    <option value='{{ $classroom->id }}' {{ in_array($classroom->id,$groupData->classroom)?'selected':'' }} >
+                                                        {{ $classroom->name }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                             @error('name')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>

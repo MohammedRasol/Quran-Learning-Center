@@ -32,35 +32,9 @@ class UserController extends Controller
      */
     public function store(ShaikhRequest $request)
     {
-        $user = new User();
-        if ($this->isShaikh())
-            $user->role = 1;
-        $user->name = $request->name;
-        $user->last_name = $request->last_name;
-        $user->family_name = $request->family_name;
-        $user->user_name = $request->user_name;
-        $user->image = $request->image;
-        // $user->email =  "asd";
-        $user->password = $request->password;
-        $res = $user->save();
-        return redirect()->back()->with("success", "Data Saved");
+    
     }
-    public function addShaikh(ShaikhRequest $request)
-    {
-        $user = new User();
-        $user->role = 1;
-        $user->name = $request->name;
-        $user->last_name = $request->last_name;
-        $user->family_name = $request->family_name;
-        $user->user_name = $request->user_name;
-        if ($request->has("image")) {
-            $imagePath = $request->file("image")->store("images", "public");
-            $user->image = $imagePath;
-        }
-        $user->password = $request->password;
-        $res = $user->save();
-        return redirect()->back()->with("success", "Data Saved");
-    }
+ 
 
     /**
      * Display the specified resource.

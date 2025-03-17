@@ -46,7 +46,7 @@
                                     <div class="row g-4">
                                         <!-- First Name -->
                                         <div class="col-md-4">
-                                            <label for="name" class="form-label">الإسم المجموعة</label>
+                                            <label for="name" class="form-label">إسم المجموعة</label>
                                             <input type="text" class="form-control" id="name" spellcheck="false"
                                                 autocomplete="one-time-code" required name="name"
                                                 value="{{ old('name') }}" required>
@@ -55,7 +55,20 @@
                                             @enderror
                                         </div>
 
-                           
+                                        <div class="col-md-4">
+                                            <label for="name" class="form-label">الغرف الصفية المرتبطة بالمجموعة</label>
+                                            <select class="form-select" name="class_rom_id[]"   multiple>
+                                                <option value="">إختر الغرف الصفية</option>
+                                                @foreach ($classrooms as $classroom)
+                                                    <option value='{{ $classroom->id }}'>
+                                                        {{ $classroom->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('name')
+                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                         <div class="col-md-12">
                                             <div class="col-md-3 col-sm-12">
                                                 <label for="fileInput" class="form-label">صورة المجموعة</label>
