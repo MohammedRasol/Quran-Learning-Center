@@ -55,9 +55,25 @@
                                             @enderror
                                         </div>
 
+
+                                        <div class="col-md-4">
+                                            <label for="name" class="form-label">الشيخ المسؤول</label>
+                                            <select class="form-select" name="user_id">
+                                                <option value="">الشيخ المسؤول</option>
+                                                @foreach ($shaikhs as $shaikh)
+                                                    <option value='{{ $shaikh->id }}'>
+                                                        {{ $shaikh->name . ' ' . $shaikh->last_name . ' ' . $shaikh->family_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('name')
+                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
                                         <div class="col-md-4">
                                             <label for="name" class="form-label">الغرف الصفية المرتبطة بالمجموعة</label>
-                                            <select class="form-select" name="class_rom_id[]"   multiple>
+                                            <select class="form-select" name="class_rom_id[]" multiple>
                                                 <option value="">إختر الغرف الصفية</option>
                                                 @foreach ($classrooms as $classroom)
                                                     <option value='{{ $classroom->id }}'>
@@ -69,6 +85,7 @@
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
                                         </div>
+
                                         <div class="col-md-12">
                                             <div class="col-md-3 col-sm-12">
                                                 <label for="fileInput" class="form-label">صورة المجموعة</label>

@@ -70,7 +70,7 @@
                                         <div class="col-md-4">
                                             <label for="shaikh_id" class="form-label">الشيخ المسؤول</label>
                                             <select class="form-select" name="shaikh_id" required>
-                                                <option value="">إختر الشيخ</option>
+                                                <option value="">  الشيخ المسؤول</option>
                                                 @foreach ($shaikhs as $shaikh)
                                                     <option value='{{ $shaikh->id }}'>
                                                         {{ $shaikh->name . ' ' . $shaikh->last_name . ' ' . $shaikh->family_name }}

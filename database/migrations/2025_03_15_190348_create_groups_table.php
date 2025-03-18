@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId("user_id")->nullable()->constrained("users")->nullOnDelete();
             $table->string('image')->nullable();
             $table->integer('graduated')->default(0);
             $table->timestamps();

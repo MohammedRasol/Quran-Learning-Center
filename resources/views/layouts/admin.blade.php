@@ -262,19 +262,38 @@
                             </a>
                         </li>
 
-                        <li class="nav-item {{ request()->path() == 'group' ? 'menu-open' : '' }}">
-                            <a href="/group" class="nav-link">
-                                <i class="bi bi-people"></i>
-                                <p>المجموعات</p>
-                            </a>
-                        </li>
-                        <li class="nav-item {{ request()->path() == 'class-room' ? 'menu-open' : '' }}">
-                            <a href="/class-room" class="nav-link">
+                        <li
+                            class="nav-item  {{ request()->path() == 'class-room' || request()->path() == 'group' ? 'menu-open' : '' }}    ">
+                            <a href="#"
+                                class="nav-link  {{ request()->path() == 'class-room' ? 'active ' : '' }} ">
                                 <i class="bi bi-people"></i>
                                 <p>الغرف الصفية</p>
                             </a>
-                        </li>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item ">
+                                    <a href="/class-room/table"
+                                        class="nav-link {{ request()->path() == 'class-room' ? 'active' : '' }} ">
+                                        <i class="bi bi-people"></i>
+                                        <p> عرض الغرف الصفية</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a href="/class-room"
+                                        class="nav-link {{ request()->path() == 'class-room' ? 'active' : '' }} ">
+                                        <i class="bi bi-people"></i>
+                                        <p> إدارة الغرف الصفية</p>
+                                    </a>
+                                </li>
 
+                                <li class="nav-item ">
+                                    <a href="/group"
+                                        class="nav-link {{ request()->path() == 'group' ? 'active' : '' }}">
+                                        <i class="bi bi-people"></i>
+                                        <p>المجموعات</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                     <!--end::Sidebar Menu-->
                 </nav>

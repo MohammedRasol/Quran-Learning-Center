@@ -19,12 +19,15 @@ class GroupController extends Controller
     public function create()
     {
         $classrooms = Classroom::where("graduated", 0)->where("group_id", null)->get();
-        return view("group.addGroup", compact("classrooms"));
+        $shaikhs = User::where("role", 2)->doesntHave("classRoom")->get();
+        return view("group.addGroup", compact("classrooms", "shaikhs"));
     }
     public function store(GroupRequest $request)
     {
         $group = new Group();
         $group->name = $request->name;
+        if ($request->has("user_id"))
+            $group->user_id = $request->user_id;
 
         if ($request->has("image")) {
             if ($group->image) {
@@ -39,15 +42,26 @@ class GroupController extends Controller
     }
     public function show($id)
     {
+
         $groupData = Group::findOrFail($id);
+
+        // See the raw SQL
+        $shaikhs = User::where("role", 2)
+            ->Where(function ($query) use ($groupData) {
+                $query->doesntHave("group")
+                    ->orWhere("id", $groupData->user_id);
+            })
+            ->get();
+
         $classrooms = Classroom::where("graduated", 0)->where("group_id", null)->orWhere("group_id", $id)->get();
         $groupData->classroom = $groupData->classroom->pluck('id')->toArray(); // Convert to array of IDs
-        return view("group.showGroup", compact("groupData", "classrooms"));
+        return view("group.showGroup", compact("groupData", "classrooms", "shaikhs"));
     }
     function update(GroupRequest $req, $id)
     {
         $groupData = Group::findOrFail($id);
         $groupData->name = $req->name;
+        $groupData->user_id = $req->user_id ?? null;
         if ($req->has("image")) {
             if ($groupData->image) {
                 Storage::disk('public')->delete($groupData->image);

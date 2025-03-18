@@ -27,6 +27,7 @@ class GroupRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:' . self::MAX_TEXT_LENGTH],
+            'user_id' => ['nullable', 'integer', 'exists:users,id'],
             'image' => [
                 'nullable',
                 'image',

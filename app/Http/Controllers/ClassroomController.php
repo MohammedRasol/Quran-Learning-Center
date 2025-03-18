@@ -20,6 +20,13 @@ class ClassroomController extends Controller
         $classrooms = Classroom::all();
         return view('classRoom.classRoomList', compact('classrooms'));
     }
+    public function tableShow()
+    {
+        $classrooms = Classroom::all();
+        return view('classRoom.classRoomTable', compact('classrooms'));
+    }
+
+    
 
     /**
      * Show the form for creating a new classroom.

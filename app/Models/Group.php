@@ -12,4 +12,7 @@ class Group extends Model
     {
         return $this->hasMany(Classroom::class);
     }
+    function user()  {
+        return $this->belongsTo(User::class);
+    }
 }

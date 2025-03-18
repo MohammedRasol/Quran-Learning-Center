@@ -68,4 +68,7 @@ class User extends Authenticatable
     function classRoom()  {
         return $this->hasOne(Classroom::class);
     }
+    function group()  {
+        return $this->hasOne(Group::class);
+    }
 }
