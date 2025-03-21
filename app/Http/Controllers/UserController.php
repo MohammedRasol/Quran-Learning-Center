@@ -15,8 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $shaikhs = User::where("role", 1)->get();
-        return view("shaikhView.shaikhList", compact("shaikhs"));
+
     }
 
     /**

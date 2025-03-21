@@ -42,7 +42,7 @@
                         <div class="card">
 
                             <!-- /.card-header -->
-                            <div class=" -body p-0 ">
+                            <div class="p-0">
                                 <div class="row text-center m-1">
                                     @if (!empty($classrooms))
                                         @foreach ($classrooms as $classroom)

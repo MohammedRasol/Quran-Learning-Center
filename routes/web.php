@@ -4,6 +4,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ShaikhController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\LessonController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -12,12 +13,22 @@ Route::get('/', function () {
 })->middleware("auth")->name("dashboard");
 
 Route::resource("shaikh", ShaikhController::class)->middleware("auth");
-Route::resource("student", StudentController::class)->middleware("auth");
-Route::resource("group", GroupController::class)->middleware("auth");
 
-Route::prefix('class-room')->middleware("auth")->group(function () {
+Route::resource("lesson", LessonController::class)->middleware("auth");
+
+Route::prefix('student/')->middleware("auth")->group(function () {
+    Route::get('/list', [StudentController::class, 'tableShow']);
+    Route::resource("", StudentController::class)->parameters(['' => 'id']);
+});
+
+Route::prefix('group/')->middleware("auth")->group(function () {
+    Route::get('/list', [GroupController::class, 'tableShow']);
+    Route::resource("", GroupController::class)->parameters(['' => 'id']);
+});
+
+Route::prefix('class-room')->middleware('auth')->group(function () {
     Route::get('/list', [ClassroomController::class, 'tableShow']);
-    Route::resource('/', ClassroomController::class); // Note the '/' instead of 'shaikhs'
+    Route::resource('', ClassroomController::class)->parameters(['' => 'id']);
 });
 
 Auth::routes();

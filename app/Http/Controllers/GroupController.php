@@ -16,18 +16,28 @@ class GroupController extends Controller
         $groups = Group::all();
         return view("group.groupList", compact("groups"));
     }
+    public function tableShow()
+    {
+        $groups = Group::all();
+        return view("group.tableShow", compact("groups"));
+    }
     public function create()
     {
         $classrooms = Classroom::where("graduated", 0)->where("group_id", null)->get();
-        $shaikhs = User::where("role", 2)->doesntHave("classRoom")->get();
+        $shaikhs = User::where("role", 2)->doesntHave("classRoom")->doesntHave("group")->get();
         return view("group.addGroup", compact("classrooms", "shaikhs"));
     }
     public function store(GroupRequest $request)
     {
         $group = new Group();
         $group->name = $request->name;
-        if ($request->has("user_id"))
-            $group->user_id = $request->user_id;
+        if ($request->exists("user_id")) {
+            $shaikh = User::findOrFail($request->user_id)->classRoom;
+            if (!$shaikh)
+                $group->user_id = $request->user_id;
+            else
+                return redirect()->back()->withErrors(['user_id' => 'الشيخ مرتبط بغرفة صفية !'])->withInput();
+        }
 
         if ($request->has("image")) {
             if ($group->image) {
@@ -61,6 +71,16 @@ class GroupController extends Controller
     {
         $groupData = Group::findOrFail($id);
         $groupData->name = $req->name;
+
+        if ($req->exists("user_id")) {
+            $shaikh = User::findOrFail($req->user_id)->classRoom;
+            if (!$shaikh)
+                $groupData->user_id = $req->user_id;
+            else
+                return redirect()->back()->withErrors(['user_id' => 'الشيخ مرتبط بغرفة صفية !'])->withInput();
+        }
+
+
         $groupData->user_id = $req->user_id ?? null;
         if ($req->has("image")) {
             if ($groupData->image) {

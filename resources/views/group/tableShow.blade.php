@@ -20,8 +20,8 @@
                     <div class="col-md-3 col-sm-12 ">
                         <div class="d-flex ml-3 justify-content-center justify-content-md-end ">
                             <button class="btn btn-success" style="margin-left:5px"
-                                onclick="location.href='/class-room/create'"> غرفة صفية جديدة</button>
-                            <button class="btn btn-primary" style="margin-left:15px"> غرفة صفية جديدة</button>
+                                onclick="location.href='/group/create'">إضافة مجموعة جديد</button>
+                            <button class="btn btn-primary" style="margin-left:15px">إضافة مجموعة جديد</button>
                         </div>
                     </div>
 
@@ -44,34 +44,32 @@
                             <!-- /.card-header -->
                             <div class="card-body p-0 ">
                                 <div class="row text-center m-1">
-                                    @if (!empty($classrooms))
-                                        @foreach ($classrooms as $classroom)
+                                    @if (!empty($groups))
+                                        @foreach ($groups as $group)
                                             <div class="col-md-2 col-sm-4 m-md-1 pt-2" style="background:#f1f1f1">
                                                 <img class="img-fluid rounded-circle" style="height:20vh;width:20vh "
-                                                    src="{{ $classroom->image ? asset('storage/' . $classroom->image) : asset('adminlte/dist/assets/img/classroom.png') }}"
-                                                    onerror="this.src='{{ asset('adminlte/dist/assets/img/classroom.png') }}';this.onerror=null;"
+                                                    src="{{ $group->image ? asset('storage/' . $group->image) : asset('adminlte/dist/assets/img/group.png') }}"
+                                                    onerror="this.src='{{ asset('adminlte/dist/assets/img/group.png') }}';this.onerror=null;"
                                                     alt="User Image" />
 
                                                 <a class="btn fw-bold fs-7 text-secondary text-truncate w-100 p-0"
                                                     href="#">
-                                                    {{ $classroom->name .= $classroom->nick_name ? '-' . $classroom->nick_name : '' }}
+                                                    {{ $group->name . ' ' . $group->family_name }}
                                                 </a>
                                                 <div class=" mb-1 p-1 d-flex justify-content-evenly">
-                                                    <button class="btn btn-success text-light"
-                                                        onclick="location.href='/class-room/{{ $classroom->id }}'"
-                                                        title="عرض إحصائيات الغرفة الصفية">
-                                                        <i class="fa-solid fa-chart-pie"></i>
+                                                    <button class="btn btn-info text-light"
+                                                        onclick="location.href='/group/{{ $group->id }}'">
+                                                        <i class="bi bi-eye" style="font-size:1rem"></i>
                                                     </button>
-                                                    <button class="btn btn-primary " title="عرض طلاب الغرفة الصفية">
-                                                        <i class="fa-solid fa-users"></i>
+                                                    <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button> <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button> <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
+                                                    </button> <button class="btn btn-primary ">
+                                                        <i class="bi bi-journal-text" style="font-size:1rem"></i>
                                                     </button>
-                                                    <button class="btn btn-warning ">
-                                                        <i class="fa-solid fa-clock-rotate-left"></i>
-                                                    </button>
-                                                    <button class="btn btn-secondary ">
-                                                        <i class="fa-solid fa-gear"></i>
-                                                    </button>
-
                                                 </div>
                                             </div>
                                             <hr class="d-md-none">
@@ -91,7 +89,7 @@
                                         </div>
                                     @else
                                         <div class="col-12 p-5">
-                                            <h1 class="alert alert-info">يرجى إضافة غرفة صفية للبدء</h1>
+                                            <h1 class="alert alert-info">يرجى إضافة مجموعة للبدء</h1>
                                         </div>
                                     @endif
                                 </div>

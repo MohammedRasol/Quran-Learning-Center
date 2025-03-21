@@ -25,4 +25,11 @@ class Classroom extends Model
     function shaikh()  {
         return $this->belongsTo(User::class,"user_id");
     }
+    public function students(){
+        return $this->belongsTo(Student::class);
+    }
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }

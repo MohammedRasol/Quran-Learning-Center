@@ -26,8 +26,6 @@ class ClassroomController extends Controller
         return view('classRoom.classRoomTable', compact('classrooms'));
     }
 
-    
-
     /**
      * Show the form for creating a new classroom.
      */
@@ -47,8 +45,17 @@ class ClassroomController extends Controller
         if ($request->hasFile('image')) {
             $classroom->image = $request->file('image')->store('classrooms', 'public');
         }
+
+        if ($request->exists("shaikh_id")) {
+            $shaikh = User::findOrFail($request->shaikh_id)->classRoom;
+            if (!$shaikh)
+                $classroom->user_id = $request->shaikh_id;
+            else
+                return redirect()->back()->withErrors(['shaikh_id' => 'الشيخ مرتبط بغرفة صفية !'])->withInput();
+        }
+
         $classroom->group_id = $request->group_id;
-        $classroom->user_id = $request->shaikh_id;
+
         $classroom->name = $request->name;
         $classroom->nick_name = $request->nick_name;
         $classroom->start_date = $request->start_date;
@@ -68,11 +75,9 @@ class ClassroomController extends Controller
         $groups = Group::where("graduated", 0)->doesntHave('classroom')->orWhere('id', $classroom->group_id)->get();
         $shaikhs = User::where(function ($query) use ($classroom) {
             $query->doesntHave('classRoom')
-                  ->orWhere("id", $classroom->user_id);
-        })
-        ->where("role", 2)
-        ->get();
-            return view('classroom.showClassRoom', compact('classroom', "groups", "shaikhs"));
+                ->orWhere("id", $classroom->user_id);
+        })->where("role", 2)->get();
+        return view('classroom.showClassRoom', compact('classroom', "groups", "shaikhs"));
     }
 
     /**

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('phone');
             $table->date('birth_date');
             $table->date('join_date');
+            $table->foreignId("classroom")->nullable()->constrained("classrooms")->nullOnDelete();
             $table->string('image')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamps();

@@ -64,7 +64,7 @@
                                                         <table class="table table-striped">
                                                             <thead>
                                                                 <tr>
-                                                                    <th style="width: 10px"><a href="/student/{{ $student->id  }}"> show</a></th>
+                                                                    <th style="width: 10px">#</th>
                                                                     <th>Task</th>
                                                                     <th>Progress</th>
                                                                     <th style="width: 40px">Label</th>
