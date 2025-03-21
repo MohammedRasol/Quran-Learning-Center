@@ -16,7 +16,7 @@ Route::resource("student", StudentController::class)->middleware("auth");
 Route::resource("group", GroupController::class)->middleware("auth");
 
 Route::prefix('class-room')->middleware("auth")->group(function () {
-    Route::get('/table', [ClassroomController::class, 'tableShow']);
+    Route::get('/list', [ClassroomController::class, 'tableShow']);
     Route::resource('/', ClassroomController::class); // Note the '/' instead of 'shaikhs'
 });
 
