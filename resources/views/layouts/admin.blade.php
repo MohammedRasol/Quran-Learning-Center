@@ -7,7 +7,7 @@
     <title>AdminLTE in Laravel 11</title>
 
     <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="/adminlte/dist/css/adminlte.rtl.min.css">
+    <link rel="stylesheet" href="/css/adminlte.rtl.css">
     <!--begin::Fonts-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
         integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q=" crossorigin="anonymous" />
@@ -261,15 +261,23 @@
                                 <p>الحصص</p>
                             </a>
                         </li>
-
                         <li
-                            class="nav-item  {{ strpos(request()->path(), 'student/') >= 0 || request()->path() == 'student' || request()->path() == 'student/list' ? 'menu-open' : '' }}    ">
+                            class="nav-item  {{ Route::currentRouteName() == 'student.edit' || request()->path() == 'student' || request()->path() == 'student/list' ? 'menu-open' : '' }}    ">
                             <a href="#"
-                                class="nav-link {{ request()->path() == 'student' || request()->path() == 'student/list' ? 'active' : '' }} ">
+                                class="nav-link {{ Route::currentRouteName() == 'student.edit' || request()->path() == 'student' || request()->path() == 'student/list' ? 'active' : '' }} ">
                                 <i class="bi bi-people"></i>
                                 <p>الطلاب</p>
                             </a>
                             <ul class="nav nav-treeview">
+                                @if (Route::currentRouteName() == 'student.edit')
+                                    <li class="nav-item ">
+                                        <a href="#"
+                                            class="nav-link {{ Route::currentRouteName() == 'student.edit' ? 'active' : '' }} ">
+                                            <i class="fa-solid fa-table-list"></i>
+                                            <p>تعديل معلومات الطالب</p>
+                                        </a>
+                                    </li>
+                                @endif
                                 <li class="nav-item ">
                                     <a href="/student/list"
                                         class="nav-link {{ request()->path() == 'student/list' ? 'active' : '' }} ">

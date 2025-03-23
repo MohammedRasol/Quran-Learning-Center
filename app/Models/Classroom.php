@@ -22,11 +22,13 @@ class Classroom extends Model
     {
         return $this->belongsTo(Group::class);
     }
-    function shaikh()  {
-        return $this->belongsTo(User::class,"user_id");
+    function shaikh()
+    {
+        return $this->belongsTo(User::class, "user_id");
     }
-    public function students(){
-        return $this->belongsTo(Student::class);
+    public function students()
+    {
+        return $this->hasMany(Student::class,"classroom");
     }
     public function lessons()
     {

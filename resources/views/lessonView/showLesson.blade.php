@@ -7,7 +7,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">إضافة الغرفة الصفية</h3>
+                        <h3 class="mb-0">معلومات الحصة</h3>
                     </div>
                 </div>
             </div>
@@ -30,7 +30,7 @@
                         <div class="card card-info card-outline">
                             <!-- Card Header -->
                             <div class="card-header">
-                                <h5 class="card-title">معلومات الغرفة الصفية
+                                <h5 class="card-title">معلومات الحصة الصفية
                                     @if (session('success'))
                                         <div class="alert alert-success">
                                             {{ session('success') }}
@@ -50,7 +50,7 @@
                                             <label for="topic" class="form-label">موضوع الحصة</label>
                                             <input type="text" class="form-control" id="topic" spellcheck="false"
                                                 autocomplete="one-time-code" required name="topic"
-                                                value="{{ old('topic') }}" required>
+                                                value="{{ old('topic') ? old('topic') : $lesson->topic }}" required>
                                             @error('topic')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
@@ -85,7 +85,7 @@
                                                 <option value=""> الغرف الصفية</option>
                                                 @foreach ($classrooms as $classroom)
                                                     <option value='{{ $classroom->id }}'
-                                                        {{ in_array($classroom->id, old('class_room', [])) ? 'selected' : '' }}>
+                                                        {{ in_array($classroom->id, $lessonClassrooms) ? 'selected' : '' }}>
                                                         {{ $classroom->name }}
                                                     </option>
                                                 @endforeach
@@ -102,7 +102,7 @@
                                                 <option value="">المجموعة</option>
                                                 @foreach ($groups as $group)
                                                     <option value='{{ $group->id }}'
-                                                        {{ $group->id == old('group') ? 'selected' : '' }}>
+                                                        {{ $group->id ==  (old('group') ? old('group') : $lesson->group ) ? 'selected' : '' }}>
                                                         {{ $group->name }}
                                                     </option>
                                                 @endforeach
@@ -116,9 +116,9 @@
                                         </div>
                                         <div class="col-md-4 col-sm-12  ">
                                             <label for="started_at" class="form-label">وقت الحصة</label>
-                                            <input type="datetime-local" class="form-control" id="started_at" spellcheck="false"
-                                                autocomplete="one-time-code" required name="started_at"
-                                                value="{{ old('started_at') }}" required>
+                                            <input type="datetime-local" class="form-control " id="started_at" spellcheck="false"  style='text-align:right'
+                                                autocomplete="one-time-code"  name="started_at"
+                                                value="{{ old('started_at') ? old('started_at') : $lesson->started_at  }}" required>
                                             @error('started_at')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror

@@ -14,21 +14,25 @@ Route::get('/', function () {
 
 Route::resource("shaikh", ShaikhController::class)->middleware("auth");
 
-Route::resource("lesson", LessonController::class)->middleware("auth");
+Route::prefix('lesson/')->middleware("auth")->group(function () {
+    Route::get('/show/{id}', [LessonController::class, 'openClassRoomLesson'])->name("openClassRoomLesson")->middleware("IsLessonRunning");
+    Route::get('/{lesson_id}/student/{student_id}', [LessonController::class, 'lessonStudentData'])->name("lessonStudentData")->middleware("IsStudentInLesson");
+    Route::resource("", LessonController::class)->parameters(['' => 'id'])->names('lesson');
+});
 
 Route::prefix('student/')->middleware("auth")->group(function () {
-    Route::get('/list', [StudentController::class, 'tableShow']);
-    Route::resource("", StudentController::class)->parameters(['' => 'id']);
+    Route::get('/list', [StudentController::class, 'tableShow'])->name("student.list");
+    Route::resource("", StudentController::class)->parameters(['' => 'id'])->names('student');
 });
 
 Route::prefix('group/')->middleware("auth")->group(function () {
-    Route::get('/list', [GroupController::class, 'tableShow']);
-    Route::resource("", GroupController::class)->parameters(['' => 'id']);
+    Route::get('/list', [GroupController::class, 'tableShow'])->name("group.list");
+    Route::resource("", GroupController::class)->parameters(['' => 'id'])->names('group');
 });
 
 Route::prefix('class-room')->middleware('auth')->group(function () {
-    Route::get('/list', [ClassroomController::class, 'tableShow']);
-    Route::resource('', ClassroomController::class)->parameters(['' => 'id']);
+    Route::get('/list', [ClassroomController::class, 'tableShow'])->name("class-room.list");
+    Route::resource('', ClassroomController::class)->parameters(['' => 'id'])->names('classroom');
 });
 
 Auth::routes();

@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lessons', function (Blueprint $table) {
-            $table->id();
-            $table->string("topic");
-            $table->foreignId("user_id")->constrained("users");
-            $table->timestamp("started_at")->default(date("Y-m-d H:i:s"));
-            $table->timestamp("finished_at")->nullable();
+        Schema::create('students_lessons', function (Blueprint $table) {
+            $table->foreignId("student_id")->constrained("students");
+            $table->foreignId("lesson_id")->constrained("lessons");
+            $table->primary(["student_id", "lesson_id"]); // Composite primary key
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lessons');
+        Schema::dropIfExists('students_lessons');
     }
 };

@@ -5,13 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Classroom;
 use App\Models\Group;
 use App\Models\Lesson;
+use App\Models\Student;
+use App\Models\Surah;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class LessonController extends Controller
 {
     public function index()
+    {
+        if (Auth::user()->role == 2)
+            $lessons = Lesson::whereHas("classrooms")->where("user_id", Auth::user()->id)->orderBy('started_at', 'desc')->cursorPaginate(15);
+        else
+            $lessons = Lesson::with("classrooms")->orderBy('started_at', 'desc')->cursorPaginate(15);
+        return view("lessonView.tableShow", compact("lessons"));
+    }
+    public function create()
     {
         if (Auth::user()->role == 2)
             $shaikhs = [Auth::user()];
@@ -22,10 +33,6 @@ class LessonController extends Controller
         $groups = Group::where("graduated", 0)->where("user_id", Auth::user()->id)->get();
         return view("lessonView.addLesson", compact("shaikhs", "classrooms", "groups"));
     }
-    public function create()
-    {
-        return view("lessonView.addLesson");
-    }
 
     public function store(Request $req)
     {
@@ -34,8 +41,74 @@ class LessonController extends Controller
         $lesson->user_id = $req->user_id;
         $lesson->started_at = $req->started_at;
         $lesson->finished_at = $req->finished_at;
-        $classrooms = Classroom::whereIn('id', $req->class_room)->get();
-        $lesson->saveMany($classrooms);
         $lesson->save();
+        $classroomIds = Classroom::whereIn('id', $req->class_room)->pluck('id')->toArray();
+        $lesson->classrooms()->sync($classroomIds);
+
+        return redirect("lesson/$lesson->id")->with('lesson');
+    }
+
+    public function show($id)
+    {
+        $lesson = Lesson::findOrFail($id);
+        if (Auth::user()->role == 2)
+            $shaikhs = [Auth::user()];
+        else
+            $shaikhs = User::where("role", 2)->get();
+
+        $classrooms = Classroom::where("graduated", 0)->where("user_id", Auth::user()->id)->get();
+        $groups = Group::where("graduated", 0)->where("user_id", Auth::user()->id)->get();
+        $lessonClassrooms = $lesson->classrooms->pluck('id')->toArray();
+        return view("lessonView.showLesson", compact("shaikhs", "classrooms", "groups", "lesson", "lessonClassrooms"));
+    }
+    function openClassRoomLesson($id)
+    {
+        $lesson = Lesson::with(['classrooms.group.classroom', 'classrooms.students'])
+            ->whereHas('classrooms')
+            ->findOrFail($id);
+
+        // Collect all classrooms
+        $classrooms = $lesson->classrooms->flatMap(function ($classroom) {
+            return $classroom->group
+                ? $classroom->group->classroom
+                : [$classroom];
+        })->all();
+
+        // Collect all students
+        $students = collect($classrooms)
+            ->pluck('students')
+            ->filter()
+            ->flatten()
+            ->all();
+
+        return view("lessonView.lessonData", compact("lesson", "classrooms", "students"));
+    }
+    function lessonStudentData($lesson_id, $student_id)
+    {
+        $lesson = Lesson::findOrFail($lesson_id);
+        $student = Student::with("recitations.lesson")->where("id", $student_id)->first();
+        $surahs = Surah::get();
+        $studentRecitationSummary= $this->showStudentRecitationSummary($student_id, $lesson_id);
+        return view("lessonView.lessonStudentData", compact("lesson", "surahs", "student","studentRecitationSummary"));
+    }
+    public function showStudentRecitationSummary($student_id, $lesson_id)
+    {
+        // Fetch student with recitations filtered by lesson_id
+        $student = Student::with(["recitations" => function ($query) use ($lesson_id) {
+            $query->where("lesson_id", $lesson_id);
+        }])->where("id", $student_id)->firstOrFail();
+
+        // Calculate summation of verses per surah
+        return $student->recitations
+            ->groupBy("surah")
+            ->map(function ($recitationsPerSurah) {
+                $totalVerses = $recitationsPerSurah->sum(function ($recitation) {
+                    return $recitation->to_verse - $recitation->from_verse + 1; // Total verses recited
+                });
+                return [
+                    'surah' => $recitationsPerSurah->first()->surah,
+                    'total_verses_recited' => $totalVerses,
+                ];
+            })->values();
     }
 }

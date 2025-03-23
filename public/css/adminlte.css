@@ -15377,3 +15377,10 @@ html.maximized-card {
 }
 
 /*# sourceMappingURL=adminlte.css.map */
+
+.card-hover {
+  opacity: .3;
+}
+.card-hover:hover {
+  opacity: 0.9;
+}

@@ -65,10 +65,20 @@ class User extends Authenticatable
 
         return $username;
     }
-    function classRoom()  {
+    function classRoom()
+    {
         return $this->hasOne(Classroom::class);
     }
-    function group()  {
+    function group()
+    {
         return $this->hasOne(Group::class);
+    }
+    public function lesson()
+    {
+        return $this->belongsTo(Lesson::class, "user_id", "id");
+    }
+    public function getFulleName()
+    {
+        return $this->name . " " . $this->last_name . " " . $this->family_name;
     }
 }

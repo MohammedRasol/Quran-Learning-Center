@@ -62,7 +62,12 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($id) {}
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
     {
         $student = Student::findOrFail($id);
         $arr = explode("-", $student->birth_date);
@@ -78,14 +83,6 @@ class StudentController extends Controller
         $student->join_day = $arr[2];
         $classrooms = Classroom::where("graduated", 0)->get();
         return view("studentView.showStudent", compact("student", "classrooms"));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Student $student)
-    {
-        //
     }
 
     /**
