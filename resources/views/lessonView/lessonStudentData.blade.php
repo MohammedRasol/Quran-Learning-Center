@@ -47,9 +47,11 @@
                                         </div>
 
                                         <div class="col-md-4 col-sm-12  pt-0">
-                                            <label for="name" class="form-label">إختر السورة</label>
+                                            <label for="name" class="form-label">إختر
+                                                السورة</label>
                                             <select class="form-select" name="class_room[]" id='class_room'
-                                                onchange="showStudentLessonData()">
+                                                onchange="getSurahData(this,'{{ $student->id }}','{{ $lesson->id }}');">
+
                                                 <option value="">السورة</option>
                                                 @foreach ($surahs as $surah)
                                                     <option value='{{ $surah->id }}'>
@@ -61,6 +63,27 @@
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
                                         </div>
+
+                                        <div class="col-md-4 col-sm-12  pt-0">
+                                            <label for="name" class="form-label">من أية </label>
+                                            <select class="form-select" id='from_verse'>
+                                                <option value="">من أية</option>
+                                            </select>
+
+                                            <div class="alert alert-danger h-20 d-none"> </div>
+
+                                        </div>
+
+                                        <div class="col-md-4 col-sm-12  pt-0">
+                                            <label for="name" class="form-label">الى أيه</label>
+                                            <select class="form-select" id='to_verse'>
+                                                <option value="">الى أيه</option>
+                                            </select>
+
+                                            <div class="alert alert-danger h-20 d-none"> </div>
+
+                                        </div>
+
 
                                         <div class="col-md-8 col-sm-12">
                                             <table class="table table-striped">
@@ -134,8 +157,22 @@
             }
 
         }
+        // ${studentId}/lesson/${lessonId}/recitations
+        function getSurahData(el, studentId, lessonId) {
 
-        function showStudentLessonData() {
+            $.ajax({
+                url: `/ajax/getSurahinfo/${el.value}/${lessonId}/${studentId}`,
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                success: function(data) {
+
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
 
         }
     </script>

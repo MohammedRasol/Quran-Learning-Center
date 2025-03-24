@@ -5,6 +5,7 @@ use App\Http\Controllers\ShaikhController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\SurahController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,11 @@ Route::prefix('group/')->middleware("auth")->group(function () {
 Route::prefix('class-room')->middleware('auth')->group(function () {
     Route::get('/list', [ClassroomController::class, 'tableShow'])->name("class-room.list");
     Route::resource('', ClassroomController::class)->parameters(['' => 'id'])->names('classroom');
+});
+
+
+Route::prefix('ajax/')->middleware('auth')->group(function () {
+    Route::get('getSurahinfo/{surah_id}/{lesson_id}/{student_id}', [SurahController::class,"getSurahinfo"])->middleware("IsStudentInLesson");
 });
 
 Auth::routes();

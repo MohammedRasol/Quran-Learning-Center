@@ -30,6 +30,9 @@ class IsStudentInLesson
         if ($student != null)
             return $next($request);
         else {
+            if ($request->ajax()) {
+                return  response()->json(["error" => 1, "message" => "غير مسموح له بالدخول للدرس"], 403);
+            }
             return redirect()->back();
         }
     }

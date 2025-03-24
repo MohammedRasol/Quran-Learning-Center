@@ -13,4 +13,22 @@ class Surah extends Model
     {
         return $this->hasMany(QuranPart::class, "surah_id", "id");
     }
+
+    public function getSurahinfo($surah_id, $lesson_id, $student_id)
+    {
+        $data = $this::leftJoin('student_lesson_recitations', function ($join) use ($student_id, $lesson_id, $surah_id) {
+            $join->on('student_lesson_recitations.surah_id', '=', 'surahs.id')
+                ->where('student_lesson_recitations.student_id', $student_id)
+                ->where('student_lesson_recitations.lesson_id', $lesson_id)
+                ->where('student_lesson_recitations.surah_id', $surah_id);
+        })
+            ->where('surahs.id', $surah_id) // Ensure we fetch the correct Surah
+            ->select([
+                'surahs.total_verses',
+                \DB::raw('COALESCE(MIN(from_verse), 0) as min_from_verse'),
+                \DB::raw('COALESCE(MAX(to_verse), 0) as max_to_verse')
+            ])
+            ->first();
+        return  $data;
+    }
 }
