@@ -13,6 +13,7 @@ class StudentLessonRecitation extends Model
         'from_verse',
         'to_verse',
         'notes',
+        'rate',
         'recitation_date',
     ];
     protected $table = "student_lesson_recitations";

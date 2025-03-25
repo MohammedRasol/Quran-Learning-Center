@@ -29,6 +29,10 @@ class Surah extends Model
                 \DB::raw('COALESCE(MAX(to_verse), 0) as max_to_verse')
             ])
             ->first();
+        if ($data->total_verses - $data->max_to_verse == 0)
+            $data->note = "تم تسميع السورة كاملة";
+        else
+            $data->note = "تبقى " . ($data->total_verses - $data->max_to_verse) . " ايه";
         return  $data;
     }
 }

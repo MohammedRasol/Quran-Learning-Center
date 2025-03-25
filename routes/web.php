@@ -39,6 +39,8 @@ Route::prefix('class-room')->middleware('auth')->group(function () {
 
 Route::prefix('ajax/')->middleware('auth')->group(function () {
     Route::get('getSurahinfo/{surah_id}/{lesson_id}/{student_id}', [SurahController::class,"getSurahinfo"])->middleware("IsStudentInLesson");
+    Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class,"saveRecitations"])->middleware("IsStudentInLesson");
+    
 });
 
 Auth::routes();

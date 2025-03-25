@@ -17,4 +17,19 @@ class SurahController extends Controller
         $data = $surah->getSurahinfo($surah_id, $lesson_id, $student_id);
         return response()->json(["data" => $data], 200);
     }
+    public function saveRecitations($surah_id, $lesson_id, $student_id)
+    {
+        $surah = new Surah();
+        $lesson = Lesson::findOrFail($lesson_id);
+        $lesson->recitations()->create([
+            'student_id' => $student_id,
+            'surah_id' => $surah_id,
+            'from_verse' => request('firstVerse'),
+            'to_verse' => request('lastVerse'),
+            'notes' => request('notes'),
+            'rate' => request('rating'),
+        ]);
+
+        return response()->json(["data" => $lesson,"status"=>200], 200);
+    }
 }
