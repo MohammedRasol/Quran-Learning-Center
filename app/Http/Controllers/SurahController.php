@@ -19,7 +19,6 @@ class SurahController extends Controller
     }
     public function saveRecitations($surah_id, $lesson_id, $student_id)
     {
-        $surah = new Surah();
         $lesson = Lesson::findOrFail($lesson_id);
         $lesson->recitations()->create([
             'student_id' => $student_id,

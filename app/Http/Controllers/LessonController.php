@@ -6,6 +6,7 @@ use App\Models\Classroom;
 use App\Models\Group;
 use App\Models\Lesson;
 use App\Models\Student;
+use App\Models\StudentLessonRecitation;
 use App\Models\Surah;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -88,9 +89,18 @@ class LessonController extends Controller
         $lesson = Lesson::findOrFail($lesson_id);
         $student = Student::with("recitations.lesson")->where("id", $student_id)->first();
         $surahs = Surah::get();
-        $studentRecitationSummary= $this->showStudentRecitationSummary($student_id, $lesson_id);
-        return view("lessonView.lessonStudentData", compact("lesson", "surahs", "student","studentRecitationSummary"));
+        $studentRecitationSummary = $this->showStudentRecitationSummary($student_id, $lesson_id);
+        return view("lessonView.lessonStudentData", compact("lesson", "surahs", "student", "studentRecitationSummary"));
     }
+    // function editLessonStudentData($lesson_id, $student_id, $surah_id)
+    // {
+    //     $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("student_id", $student_id)->where("surah_id", $surah_id)->orderBy("from_verse")->get();
+    //     $lesson=$recitations->first()->lesson;
+    //     $student=$recitations->first()->student;
+    //     $surah=$recitations->first()->surah;
+    //     $surahs = Surah::get();
+    //     return view("lessonView.lessonStudentRecitationData", compact("lesson", "surah", "student", "recitations","surahs"));
+    // }
     public function showStudentRecitationSummary($student_id, $lesson_id)
     {
         // Fetch student with recitations filtered by lesson_id
@@ -105,10 +115,30 @@ class LessonController extends Controller
                 $totalVerses = $recitationsPerSurah->sum(function ($recitation) {
                     return $recitation->to_verse - $recitation->from_verse + 1; // Total verses recited
                 });
+                $averageRate = $recitationsPerSurah->avg('rate');
+
+                // Get the total verses in the surah (assuming surah relationship exists)
+                $surahTotalVerses = $recitationsPerSurah->first()->surah->total_verses;
+
+                // Calculate rate percentage based on total verses recited vs surah total
+                $ratePercentage = $surahTotalVerses > 0
+                    ? round(($totalVerses / $surahTotalVerses) * $averageRate * 20, 2) // Assuming rate is 0-5 scale
+                    : 0;
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
+                    'rate' => $ratePercentage > 0 ? $ratePercentage / 20 : 0,
                     'total_verses_recited' => $totalVerses,
+                    'id' => $recitationsPerSurah->first()->id,
                 ];
             })->values();
+    }
+    function deletRecitation(
+        $lesson_id,
+        $student_id,
+        $surah_id
+    ) {
+
+        $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("surah_id", $surah_id)->where("student_id", $student_id)->delete();
+        return $recitations;
     }
 }

@@ -16,8 +16,9 @@ Route::get('/', function () {
 Route::resource("shaikh", ShaikhController::class)->middleware("auth");
 
 Route::prefix('lesson/')->middleware("auth")->group(function () {
-    Route::get('/show/{id}', [LessonController::class, 'openClassRoomLesson'])->name("openClassRoomLesson")->middleware("IsLessonRunning");
-    Route::get('/{lesson_id}/student/{student_id}', [LessonController::class, 'lessonStudentData'])->name("lessonStudentData")->middleware("IsStudentInLesson");
+    Route::get('show/{id}', [LessonController::class, 'openClassRoomLesson'])->name("openClassRoomLesson")->middleware("IsLessonRunning");
+    Route::get('{lesson_id}/student/{student_id}', [LessonController::class, 'lessonStudentData'])->name("lessonStudentData")->middleware("IsStudentInLesson");
+    // Route::get('{lesson_id}/student/{student_id}/surah/{surah_id}/edit', [LessonController::class, 'editLessonStudentData'])->name("editLessonStudentData")->middleware(["IsStudentInLesson", "IsSurahInStudentRecitations"]);
     Route::resource("", LessonController::class)->parameters(['' => 'id'])->names('lesson');
 });
 
@@ -38,9 +39,9 @@ Route::prefix('class-room')->middleware('auth')->group(function () {
 
 
 Route::prefix('ajax/')->middleware('auth')->group(function () {
-    Route::get('getSurahinfo/{surah_id}/{lesson_id}/{student_id}', [SurahController::class,"getSurahinfo"])->middleware("IsStudentInLesson");
-    Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class,"saveRecitations"])->middleware("IsStudentInLesson");
-    
+    Route::get('getSurahinfo/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "getSurahinfo"])->middleware("IsStudentInLesson");
+    Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "saveRecitations"])->middleware(["IsStudentInLesson"]);
+    Route::delete('deletRecitation/{lesson_id}/{student_id}/{surah_id}', [LessonController::class, "deletRecitation"])->middleware(["IsSurahInStudentRecitations"]);
 });
 
 Auth::routes();

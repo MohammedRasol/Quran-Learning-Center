@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class StudentLessonRecitation extends Model
 {
@@ -29,5 +30,21 @@ class StudentLessonRecitation extends Model
     public function surah()
     {
         return $this->hasOne(Surah::class, "id", "surah_id");
+    }
+    static function IsSurahInStudentRecitations($request)
+    {
+        $recitation = self::where("student_id", $request->student_id)
+            ->where("lesson_id", $request->lesson_id)
+            ->where("surah_id", $request->surah_id)
+            ->firstOrFail();
+        return $recitation != null ? true : false;
+    }
+    static function IsStudentHaveRecitation($surah_id, $student_id, $lesson_id)
+    {
+        $recitation = self::where("surah_id", $surah_id)
+            ->where("student_id", $student_id)
+            ->where("lesson_id", $lesson_id)
+            ->firstOrFail();
+        return $recitation != null ? true : false;
     }
 }

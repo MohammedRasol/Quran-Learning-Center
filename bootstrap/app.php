@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Middleware\IsLessonRunning;
+use App\Http\Middleware\IsStudentHaveRecitation;
 use App\Http\Middleware\IsStudentInLesson;
+use App\Http\Middleware\IsSurahInStudentRecitations;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             "IsLessonRunning" => IsLessonRunning::class,
             "IsStudentInLesson" => IsStudentInLesson::class,
+            "IsSurahInStudentRecitations" => IsSurahInStudentRecitations::class,
+            "IsStudentHaveRecitation" => IsStudentHaveRecitation::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -77,25 +77,17 @@
                                         <div class="col-md-4 col-sm-12  pt-0">
                                             <label for="surah_id" class="form-label">إختر
                                                 السورة</label>
-                                            <select class="form-select" id='surah_id'
-                                                onchange="getSurahData(this,'{{ $student->id }}','{{ $lesson->id }}');">
-
-                                                <option value="">السورة</option>
-                                                @foreach ($surahs as $surah)
-                                                    <option value='{{ $surah->id }}'>
-                                                        {{ $surah->name }}
-                                                    </option>
-                                                @endforeach
+                                            <select class="form-select" id='surah_id'>
+                                                <option value='{{ $surah->id }}'>
+                                                    {{ $surah->name }}
+                                                </option>
                                             </select>
-                                            @error('surah_id')
-                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
-                                            @enderror
                                         </div>
 
                                         <div class="col-md-3 col-sm-12  pt-0">
                                             <label for="name" class="form-label">من أية </label>
                                             <select class="form-select" id='from_verse' onchange="verseChange(this)">
-                                                <option value="">من أية</option>
+                                                <option value="{{ $recitation->min_from_verse }}">{{ $recitation->min_from_verse }}</option>
                                             </select>
 
                                             <div class="alert alert-danger h-20 d-none"> </div>
@@ -105,7 +97,7 @@
                                         <div class="col-md-3 col-sm-12  pt-0">
                                             <label for="name" class="form-label">الى أيه</label>
                                             <select class="form-select" id='to_verse'>
-                                                <option value="">الى أيه</option>
+                                                <option value="{{ $recitation->max_to_verse }}">{{ $recitation->max_to_verse }}</option>
                                             </select>
                                             <div class="alert alert-danger h-20 d-none"> </div>
                                         </div>
@@ -139,59 +131,52 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th style="width: 10%">*</th>
                                                             <th align="center" style="width:25%">السورة</th>
                                                             <th style="width:20%">الإنجاز</th>
                                                             <th style="width: 15%" align="center">النسبة</th>
-                                                            <th style="width: 15%" align="center">التقييم</th>
-                                                            <th style="width: 10%" alignJonah align="center">
+                                                            <th style="width: 30%" alignJonah align="center">
                                                                 #
                                                             </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($studentRecitationSummary as $key => $recitation)
-                                                            @set($recitationPercenter = ($recitation['total_verses_recited'] / $recitation['surah']->total_verses) * 100)
+
+                                                        @set($recitationPercenter = ($recitation['total_verses_recited'] / $recitation['surah']->total_verses) * 100)
+                                                        @set($color = 'primary')
+                                                        @if ($recitationPercenter <= 25)
+                                                            @set($color = 'secondary')
+                                                        @elseif($recitationPercenter <= 50)
+                                                            @set($color = 'warning')
+                                                        @elseif($recitationPercenter <= 75)
                                                             @set($color = 'primary')
-                                                            @if ($recitationPercenter <= 25)
-                                                                @set($color = 'secondary')
-                                                            @elseif($recitationPercenter <= 50)
-                                                                @set($color = 'warning')
-                                                            @elseif($recitationPercenter <= 75)
-                                                                @set($color = 'primary')
-                                                            @elseif($recitationPercenter <= 100)
-                                                                @set($color = 'success')
-                                                            @endif
-                                                            <tr class="align-middle">
-                                                                <td> </td>
-                                                                <td>{{ $recitation['surah']->name }}</td>
-                                                                <td>
-                                                                    <div class="progress progress-xs">
-                                                                        <div class="progress-bar progress-bar-{{ $color }} bg-{{ $color }} "
-                                                                            style="width:{{ number_format($recitationPercenter, 1) }}%">
-                                                                        </div>
+                                                        @elseif($recitationPercenter <= 100)
+                                                            @set($color = 'success')
+                                                        @endif
+                                                        <tr class="align-middle">
+
+                                                            <td>{{ $recitation['surah']->name }}</td>
+                                                            <td>
+                                                                <div class="progress progress-xs">
+                                                                    <div class="progress-bar progress-bar-{{ $color }} bg-{{ $color }} "
+                                                                        style="width:{{ number_format($recitationPercenter, 1) }}%">
                                                                     </div>
-                                                                </td>
-                                                                <td>
-                                                                    <span class="badge text-bg-{{ $color }}">
-                                                                        {{ number_format($recitationPercenter, 1) }}%
-                                                                    </span>
-                                                                </td>
-                                                                <td>
-                                                                    <i class="fa-solid fa-star text-warning"></i>
-                                                                    {{ round($recitation['rate']) }}
-                                                                </td>
-                                                                <td>
-                                                                    {{-- <a href='/lesson/{{ $lesson->id }}/student/{{ $student->id }}/surah/{{ $recitation['surah']->id }}/edit' type='button' class="btn btn-sm btn-primary">
-                                                                        <i class="fa-solid fa-pen-to-square"></i>
-                                                                    </a> --}}
-                                                                    <button type='button' class="btn btn-sm btn-danger"
-                                                                        onclick="deleteRecitations(this,'{{ $recitation['surah']->id }}','{{ $student->id }}','{{ $lesson->id }}');">
-                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge text-bg-{{ $color }}">
+                                                                    {{ number_format($recitationPercenter, 1) }}%
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <a href='/lesson/{{ $lesson->id }}/student/{{ $student->id }}/surah/{{ $recitation['surah']->id }}/edit'
+                                                                    type='button' class="btn btn-sm btn-primary">
+                                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                                </a>
+                                                                <button type='button' class="btn btn-sm btn-danger">
+                                                                    <i class="fa-solid fa-xmark"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -347,6 +332,9 @@
             let lastVerse = $("#to_verse").val();
             let notes = $("#notes").val();
             let rating = $("#ratingValue").text();
+
+
+
             $.ajax({
                 url: `/ajax/saveRecitations/${surahId}/${lessonId}/${studentId}`,
                 method: 'POST',
@@ -369,30 +357,6 @@
                     console.error('Error:', error);
                 }
             });
-        }
-
-        function deleteRecitations(el, surahId, studentId, lessonId) {
-            let tr = el.closest("tr");
-            if (confirm("سوف يتم حذف هذا التمسيع ولا يمكن التراجع! ")) {
-
-                $.ajax({
-                    url: `/ajax/deletRecitation/${lessonId}/${studentId}/${surahId}`,
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('input[name="_token"]').val()
-                    },
-                    success: function(response) {
-                        if (response.status == 200) {
-                            location.reload();
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
-                });
-
-                // $(tr).fadeOut();
-            }
         }
     </script>
 @endsection

@@ -2,28 +2,23 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Lesson;
+use App\Models\StudentLessonRecitation;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class IsStudentInLesson
+class IsStudentHaveRecitation
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+
     public function handle(Request $request, Closure $next): Response
     {
-        if (Lesson::IsStudentInLesson($request))
+        if (StudentLessonRecitation::IsStudentHaveRecitation($request->surah_id, $request->student_id, $request->lesson_id))
             return $next($request);
         else {
             if ($request->ajax()) {
                 return  response()->json(["error" => 1, "message" => "غير مسموح له بالدخول للدرس"], 403);
             }
-            return redirect("lesson/$request->lesson_id")->with("message", "غير مسموح له بالدخول للدرس");
+            return redirect()->back();
         }
     }
 }
