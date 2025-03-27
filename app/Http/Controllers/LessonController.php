@@ -92,6 +92,21 @@ class LessonController extends Controller
         $studentRecitationSummary = $this->showStudentRecitationSummary($student_id, $lesson_id);
         return view("lessonView.lessonStudentData", compact("lesson", "surahs", "student", "studentRecitationSummary"));
     }
+    function getLessonSurahInfo($surah_id, $lesson_id, $student_id)
+    {
+        $data = [
+            'recitations' => StudentLessonRecitation::with(["student", "surah", "lesson"])
+                ->where("surah_id", $surah_id)
+                ->where("student_id", $student_id)
+                ->where("lesson_id", $lesson_id)
+                ->orderBy("from_verse")
+                ->get(),
+            'student' => Student::findOrFail($student_id), // Throws 404 if not found
+            'surah' => Surah::findOrFail($surah_id),
+            'lesson' => Lesson::findOrFail($lesson_id),
+        ];
+        return response()->json(["data" => $data, "status" => 200], 200);
+    }
     // function editLessonStudentData($lesson_id, $student_id, $surah_id)
     // {
     //     $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("student_id", $student_id)->where("surah_id", $surah_id)->orderBy("from_verse")->get();
@@ -126,7 +141,7 @@ class LessonController extends Controller
                     : 0;
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
-                    'rate' => $ratePercentage > 0 ? $ratePercentage / 20 : 0,
+                    'rate' => $ratePercentage > 0 ? round($ratePercentage / 20) : 0,
                     'total_verses_recited' => $totalVerses,
                     'id' => $recitationsPerSurah->first()->id,
                 ];

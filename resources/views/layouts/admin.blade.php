@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE in Laravel 11</title>
+    <title>مركز سال القرآني </title>
 
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="/css/adminlte.rtl.css">

@@ -273,49 +273,74 @@
             }
 
         }
+        var recitations = {};
+        var range = [];
         // ${studentId}/lesson/${lessonId}/recitations
-        function getSurahData(el, studentId, lessonId) {
+        function getSurahData(surah, studentId, lessonId) {
             $.ajax({
-                url: `/ajax/getSurahinfo/${el.value}/${lessonId}/${studentId}`,
+                url: `/ajax/getLessonSurahInfo/${surah.value}/${lessonId}/${studentId}`,
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val()
                 },
                 success: function(data) {
                     let response = data.data ? data.data : null;
-                    if (response.total_verses) {
-                        let firstVerse = response.min_from_verse ? response.min_from_verse : 1;
-                        let lastVerse = response.max_to_verse ? (response.max_to_verse) : 1;
-                        let totalVerse = response.total_verses ? response.total_verses : 1;
-                        let fromVerseOptions = "";
-                        let toVerseOptions = "";
-                        let count = 0;
-                        let startVerse = lastVerse == 1 ? lastVerse : lastVerse + 1;
+                    const allNumbers = new Set();
+
+                    if (response) {
+                        var total_verses = response["surah"]["total_verses"];
+                        var msg = "";
+                        var completed = false;
+                        for (let index = 0; index < response.recitations.length; index++) {
+
+                            const element = response.recitations[index];
 
 
+                            if (total_verses == element.to_verse) {
+                                msg = "تم تسميع السورة بالكامل ";
+                                completed = true;
+                                break;
+                            }
+                            if (!recitations[surah.value]) {
+                                recitations[surah.value] = [];
+                            }
+                            recitations[surah.value][index] = {
+                                from: element.from_verse,
+                                to: element.to_verse
+                            };
 
-                        for (let index = startVerse; index <= totalVerse; index++) {
-
-                            fromVerseOptions += `<option value=${index}>${index}</option>`;
-                            if (count > 0)
-                                toVerseOptions += `<option value=${index}>${index}</option>`;
-                            count++;
+                            // Add all numbers in this range to the set
+                            for (let i = element.from_verse; i <= element.to_verse; i++) {
+                                allNumbers.add(i);
+                            }
                         }
-                        $("#from_verse").html(fromVerseOptions);
-                        $("#to_verse").html(toVerseOptions);
-                        console.log([totalVerse == lastVerse, totalVerse, lastVerse]);
-                        if (totalVerse == lastVerse) {
-                            $("#recitations_note").addClass("alert-success");
-                            $("#recitations_note").removeClass("alert-primary");
-                        } else {
-                            $("#recitations_note").removeClass("alert-success");
-                            $("#recitations_note").addClass("alert-primary");
+
+                        if (!completed) {
+                            // Convert set to sorted array
+                            range = Array.from(allNumbers).sort((a, b) => a - b);
+                            var fromVerseOptions = "";
+                            var toVerseOptions = "";
+                            fromVerseOptions += `<option value=''>من آية</option>`;
+                            for (let index = 1; index < total_verses; index++) {
+                                if (!range.includes(index)) {
+                                    fromVerseOptions += `<option value=${index}>${index}</option>`;
+                                }
+                            }
+                            $("#from_verse").html(fromVerseOptions);
                         }
 
-                        $("#recitations_note").html(response.note ?? "لم يتسم التسميع ");
+                        $("#recitations_note").addClass("alert-primary");
+
+                        $("#recitations_note").html(msg != "" ? msg : "لم يتسم التسميع السورة بالكامل ");
                         $("#recitations_note").parent().removeClass("d-none");
                         $("#recitations_note").removeClass("d-none");
                     }
+
+
+
+
+                    console.log(recitations);
+
                 },
                 error: function(xhr, status, error) {
                     console.error('Error:', error);
@@ -333,9 +358,17 @@
             const firstOption = parseInt(el.value);
             const lastOption = parseInt(el.querySelector('select option:last-child').value);
             let toVerseOptions = "";
-            console.log([firstOption, lastOption]);
-            for (let index = firstOption + 1; index <= lastOption; index++) {
-                toVerseOptions += `<option value=${index}>${index}</option>`;
+            let count = 0;
+            for (let index = firstOption + 1; index <= (lastOption + 1); index++) {
+                if (!range.includes(index)) {
+                    count++;
+                    toVerseOptions += `<option value=${index}>${index}</option>`;
+                } else {
+                    if (count == 0)
+                        toVerseOptions += `<option value=''>يرجى إختيار من ايه اخرى </option>`;
+                    break;
+                }
+
             }
             $("#to_verse").html(toVerseOptions);
 

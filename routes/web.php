@@ -40,6 +40,7 @@ Route::prefix('class-room')->middleware('auth')->group(function () {
 
 Route::prefix('ajax/')->middleware('auth')->group(function () {
     Route::get('getSurahinfo/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "getSurahinfo"])->middleware("IsStudentInLesson");
+    Route::get('getLessonSurahInfo/{surah_id}/{lesson_id}/{student_id}', [LessonController::class, "getLessonSurahInfo"])->middleware("IsStudentInLesson");
     Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "saveRecitations"])->middleware(["IsStudentInLesson"]);
     Route::delete('deletRecitation/{lesson_id}/{student_id}/{surah_id}', [LessonController::class, "deletRecitation"])->middleware(["IsSurahInStudentRecitations"]);
 });
