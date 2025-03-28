@@ -83,7 +83,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <label for="group_id" class="form-label"> مرتبط بالمجموعة</label>
-                                            <select class="form-select"  name="group_id" required> 
+                                            <select class="form-select"  name="group_id" > 
                                                 <option value="">إختر المجموعة</option>
 
                                                 @foreach ($groups as $group)

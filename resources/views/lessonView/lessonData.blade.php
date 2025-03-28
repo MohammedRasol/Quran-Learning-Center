@@ -41,12 +41,12 @@
                                     <div class="row g-4">
                                         <div class="col-md-12 text-primary ">
                                             <div class="col-md-4 col-sm-12">
-                                                <label for="user_id" class="form-label">الشيخ المسؤول :
-                                                    {{ $lesson->shaikh->getFulleName() }}</label>
+                                                <div class="alert alert-primary"> الشيخ المسؤول :
+                                                    {{ $lesson->shaikh->getFulleName() }}</div>
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4 col-sm-12  pt-0">
+                                        {{-- <div class="col-md-4 col-sm-12  pt-0">
                                             <label for="name" class="form-label">إختر السورة</label>
                                             <select class="form-select" name="class_room[]" id='class_room'
                                                 onchange="showStudentLessonData()">
@@ -60,46 +60,105 @@
                                             @error('class_room')
                                                 <div class="alert alert-danger h-20 ">{{ $message }}</div>
                                             @enderror
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="col-md-8 col-sm-12">
+                                        <div class="col-md-12 col-sm-12">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
                                                         <th style="width: 10px"></th>
-                                                        <th>Task</th>
-                                                        <th>Progress</th>
-                                                        <th style="width: 40px">Label</th>
+                                                        <th>الطالب</th>
+                                                        <th style="">تسميع</th>
+                                                        <th style="">النسبة</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($students as $student)
+                                                    @foreach ($students as $key => $student)
                                                         <tr class="align-middle">
-                                                            <td>{{ $student->id }}</td>
-                                                            <td><a
-                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">{{ $student->getFullName() }}</a>
-                                                            </td>
+                                                            <td>{{ $key + 1 }}</td>
                                                             <td>
-                                                                <div class="progress progress-xs">
-                                                                    <div class="progress-bar progress-bar-danger"
-                                                                        style="width: 55%"></div>
-                                                                </div>
+                                                                <a
+                                                                    href="javascript:showData('{{ $student->id }}')">{{ $student->getFullName() }}</a>
+
                                                             </td>
+
+                                                            <td align="center"> <a class="btn btn-primary btn-sm"
+                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}"><i
+                                                                        class="fa-solid fa-ear-listen"></i></a> </td>
                                                             <td><span class="badge text-bg-danger">55%</span></td>
                                                         </tr>
-                                                    @endforeach
+                                                        <tr class="student-data" id='student_{{ $student->id }}'
+                                                            style="display: none;">
+                                                            <td colspan="4">
 
+                                                                <table class="table table-striped ">
+                                                                    @if (count($student->summary) != 0)
+                                                                        <thead>
+                                                                            <tr>
+
+                                                                                <th>السورة</th>
+                                                                                <th>الانجاز</th>
+                                                                                <th style="width: 40px">النسبة</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach ($student->summary as $summary)
+                                                                                @set($recitationPercenter = $summary['percentage'])
+                                                                                @set($color = 'primary')
+                                                                                @if ($recitationPercenter <= 25)
+                                                                                    @set($color = 'secondary')
+                                                                                @elseif($recitationPercenter <= 50)
+                                                                                    @set($color = 'warning')
+                                                                                @elseif($recitationPercenter <= 75)
+                                                                                    @set($color = 'primary')
+                                                                                @elseif($recitationPercenter <= 100)
+                                                                                    @set($color = 'success')
+                                                                                @endif
+
+                                                                                <tr class="align-middle">
+
+                                                                                    <td>سورة {{ $summary['surah']->name }}
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div
+                                                                                            class="progress progress-xs progress-striped active">
+                                                                                            <div class="progress-bar text-bg-{{ $color }}"
+                                                                                                style="width: {{ $summary['percentage'] }}%">
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td><span
+                                                                                            class="badge text-bg-{{ $color }}">{{ $summary['percentage'] }}%</span>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                            <tr>
+                                                                                <td colspan="3">
+                                                                                </td>
+                                                                            </tr>
+
+                                                                        </tbody>
+                                                                    @else
+                                                                        <tr>
+                                                                            <td>
+                                                                                لم يتسم التسميع للطالب بعد
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
 
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-
                                 <!-- Card Footer -->
                                 <div class="card-footer ">
                                     <div class=" col-md-2 col-sm-12 ">
-                                        <button class="btn btn-success w-100" type="submit">إضافة الغرفة الصفية</button>
+                                        <button class="btn btn-danger w-100" type="submit">انهاء الغرفة الصفية</button>
                                     </div>
                                 </div>
                             </form>
@@ -129,8 +188,10 @@
 
         }
 
-        function showStudentLessonData() {
-
+        function showData(id) {
+            $(".student-data").hide("fast", function() {
+                $("#student_" + id).slideDown("fast");
+            });
         }
     </script>
 @endsection

@@ -62,27 +62,18 @@ class LessonController extends Controller
         $lessonClassrooms = $lesson->classrooms->pluck('id')->toArray();
         return view("lessonView.showLesson", compact("shaikhs", "classrooms", "groups", "lesson", "lessonClassrooms"));
     }
-    function openClassRoomLesson($id)
+    function openClassRoomLesson($lesson_id)
     {
-        $lesson = Lesson::with(['classrooms.group.classroom', 'classrooms.students'])
-            ->whereHas('classrooms')
-            ->findOrFail($id);
+        $lesson = Lesson::with(['classrooms.group.classroom', 'classrooms.students.recitations' => function ($query) use ($lesson_id) {
+            $query->where('lesson_id', $lesson_id);
+        }])->whereHas('classrooms')->findOrFail($lesson_id);
+        $students = $lesson->classrooms->pluck('students')->flatten()->unique('id');
+        foreach ($students as $key => &$student) {
+            $student->summary = $this->showStudentRecitationSummary($student->id, $lesson_id);
+        }
+ 
 
-        // Collect all classrooms
-        $classrooms = $lesson->classrooms->flatMap(function ($classroom) {
-            return $classroom->group
-                ? $classroom->group->classroom
-                : [$classroom];
-        })->all();
-
-        // Collect all students
-        $students = collect($classrooms)
-            ->pluck('students')
-            ->filter()
-            ->flatten()
-            ->all();
-
-        return view("lessonView.lessonData", compact("lesson", "classrooms", "students"));
+        return view("lessonView.lessonData", compact("lesson", "students"));
     }
     function lessonStudentData($lesson_id, $student_id)
     {
@@ -107,15 +98,7 @@ class LessonController extends Controller
         ];
         return response()->json(["data" => $data, "status" => 200], 200);
     }
-    // function editLessonStudentData($lesson_id, $student_id, $surah_id)
-    // {
-    //     $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("student_id", $student_id)->where("surah_id", $surah_id)->orderBy("from_verse")->get();
-    //     $lesson=$recitations->first()->lesson;
-    //     $student=$recitations->first()->student;
-    //     $surah=$recitations->first()->surah;
-    //     $surahs = Surah::get();
-    //     return view("lessonView.lessonStudentRecitationData", compact("lesson", "surah", "student", "recitations","surahs"));
-    // }
+
     public function showStudentRecitationSummary($student_id, $lesson_id)
     {
         // Fetch student with recitations filtered by lesson_id
@@ -131,19 +114,20 @@ class LessonController extends Controller
                     return $recitation->to_verse - $recitation->from_verse + 1; // Total verses recited
                 });
                 $averageRate = $recitationsPerSurah->avg('rate');
-
+                // $ratePercentage=
                 // Get the total verses in the surah (assuming surah relationship exists)
-                $surahTotalVerses = $recitationsPerSurah->first()->surah->total_verses;
+                // $surahTotalVerses = $recitationsPerSurah->first()->surah->total_verses;
 
                 // Calculate rate percentage based on total verses recited vs surah total
-                $ratePercentage = $surahTotalVerses > 0
-                    ? round(($totalVerses / $surahTotalVerses) * $averageRate * 20, 2) // Assuming rate is 0-5 scale
-                    : 0;
+                // $ratePercentage = $surahTotalVerses > 0
+                //     ? round(($totalVerses ) * $averageRate * 20, 2) // Assuming rate is 0-5 scale
+                //     : 0;
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
-                    'rate' => $ratePercentage > 0 ? round($ratePercentage / 20) : 0,
+                    'rate' => $averageRate > 0 ? round($averageRate  ) : 0,
                     'total_verses_recited' => $totalVerses,
                     'id' => $recitationsPerSurah->first()->id,
+                    "percentage"=>round($totalVerses/$recitationsPerSurah->first()->surah->total_verses *100 ,2)
                 ];
             })->values();
     }

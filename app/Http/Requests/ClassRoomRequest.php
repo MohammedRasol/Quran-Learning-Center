@@ -22,7 +22,7 @@ class ClassRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_id' => 'required|exists:groups,id',
+            'group_id' => 'nullable|exists:groups,id',
             'shaikh_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
             'nick_name' => 'nullable|string|max:255',

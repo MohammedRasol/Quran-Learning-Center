@@ -364,8 +364,13 @@
                     count++;
                     toVerseOptions += `<option value=${index}>${index}</option>`;
                 } else {
-                    if (count == 0)
-                        toVerseOptions += `<option value=''>يرجى إختيار من ايه اخرى </option>`;
+                    if (count == 0) {
+                        if (firstOption == 1) {//في حالة تبقى تسميع الاية الاولى 
+                            toVerseOptions += `<option value=${firstOption}>${firstOption}</option>`;
+                        }else{
+                            toVerseOptions += `<option value=''>يرجى إختيار من ايه اخرى </option>`;
+                        }
+                    }
                     break;
                 }
 

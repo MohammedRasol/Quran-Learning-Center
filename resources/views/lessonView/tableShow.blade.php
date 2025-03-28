@@ -31,6 +31,15 @@
             <!--end::Container-->
         </div>
         <!--end::App Content Header-->
+        @if ($errors)
+            <div style="color: red;">
+                <ul>
+                    @foreach ($errors as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <!--begin::App Content-->
         <div class="app-content" style="overflow-y: auto; height: min-content; max-height:100vh;">
             <!--begin::Container-->
@@ -46,7 +55,8 @@
                                         @foreach ($lessons as $lesson)
                                             <div class="col-md-4 col-lg-2  col-sm-2 p-0">
                                                 <div class="card h-60 m-1 alert alert-info card-hover">
-                                                    <a href="/lesson/show/{{ $lesson->id }}" class="card-body " style="text-decoration:none">
+                                                    <a href="/lesson/show/{{ $lesson->id }}" class="card-body "
+                                                        style="text-decoration:none">
                                                         <small class="text-muted"
                                                             style="position: absolute;right:5px;top:3px;">
                                                             {{ $lesson->arabicDateTranslator($lesson->started_at) }}

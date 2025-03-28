@@ -23,7 +23,7 @@ class IsStudentInLesson
             if ($request->ajax()) {
                 return  response()->json(["error" => 1, "message" => "غير مسموح له بالدخول للدرس"], 403);
             }
-            return redirect("lesson/$request->lesson_id")->with("message", "غير مسموح له بالدخول للدرس");
+            return redirect("lesson")->with(["errors" => ["غير مسموح له بالدخول للدرس"]]);
         }
     }
 }
