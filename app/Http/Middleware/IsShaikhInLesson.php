@@ -8,11 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class IsLessonRunning
+class IsShaikhInLesson
 {
+
     public function handle(Request $request, Closure $next): Response
     {
-        if (Lesson::IsLessonNotFinishedYet($request->lesson_id))
+        if (Lesson::IsShaikhInLesson(Auth::user()->id, $request->lesson_id))
             return $next($request);
         else {
             if ($request->ajax()) {
@@ -20,6 +21,5 @@ class IsLessonRunning
             }
             return redirect("lesson")->with(["errors" => ["غير مسموح له بالدخول للدرس"]]);
         }
-        return $next($request);
     }
 }

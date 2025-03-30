@@ -49,4 +49,14 @@ class Lesson extends Model
             ->firstWhere('id', $request->student_id);
         return $student != null ? true : false;
     }
+    static function IsShaikhInLesson($shaikh_id, $lesson_id)
+    {
+        $lesson =  self::where("id", $lesson_id)->where("user_id", $shaikh_id)->first();
+        return $lesson != null ? true : false;
+    }
+    static function IsLessonNotFinishedYet($lesson_id)
+    {
+        $lesson =  self::where("id", $lesson_id)->whereNull("finished_at")->first();
+        return $lesson != null ? true : false;
+    }
 }

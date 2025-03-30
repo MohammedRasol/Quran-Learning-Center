@@ -10,7 +10,7 @@ use App\Models\StudentLessonRecitation;
 use App\Models\Surah;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class LessonController extends Controller
@@ -69,18 +69,25 @@ class LessonController extends Controller
         }])->whereHas('classrooms')->findOrFail($lesson_id);
         $students = $lesson->classrooms->pluck('students')->flatten()->unique('id');
         foreach ($students as $key => &$student) {
-            $student->summary = $this->showStudentRecitationSummary($student->id, $lesson_id);
+            $student->summary = $this->showStudentRecitationSummary($student, $lesson_id);
         }
- 
-
-        return view("lessonView.lessonData", compact("lesson", "students"));
+        $isRunning = $lesson->finished_at == null ? true : false;
+        if (!$isRunning) {
+            // Carbon::setLocale('ar_JO');
+            // $lesson->finished_at = Carbon::parse($lesson->finished_at)->diffForHumans();
+            // $lesson->finished_at .= "  بتاريخ ";
+            // $date = Carbon::parse($lesson->finished_at)->locale('ar');
+            // $lesson->finished_at = $date->format('l، j F Y'); // Force Arabic locale
+        }
+         return view("lessonView.lessonData", compact("lesson", "students", "isRunning"));
     }
     function lessonStudentData($lesson_id, $student_id)
     {
         $lesson = Lesson::findOrFail($lesson_id);
         $student = Student::with("recitations.lesson")->where("id", $student_id)->first();
         $surahs = Surah::get();
-        $studentRecitationSummary = $this->showStudentRecitationSummary($student_id, $lesson_id);
+        $studentRecitationSummary = $this->showStudentRecitationSummary($student, $lesson_id);
+
         return view("lessonView.lessonStudentData", compact("lesson", "surahs", "student", "studentRecitationSummary"));
     }
     function getLessonSurahInfo($surah_id, $lesson_id, $student_id)
@@ -99,13 +106,8 @@ class LessonController extends Controller
         return response()->json(["data" => $data, "status" => 200], 200);
     }
 
-    public function showStudentRecitationSummary($student_id, $lesson_id)
+    public function showStudentRecitationSummary($student, $lesson_id)
     {
-        // Fetch student with recitations filtered by lesson_id
-        $student = Student::with(["recitations" => function ($query) use ($lesson_id) {
-            $query->where("lesson_id", $lesson_id);
-        }])->where("id", $student_id)->firstOrFail();
-
         // Calculate summation of verses per surah
         return $student->recitations
             ->groupBy("surah")
@@ -124,20 +126,59 @@ class LessonController extends Controller
                 //     : 0;
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
-                    'rate' => $averageRate > 0 ? round($averageRate  ) : 0,
+                    'rate' => $averageRate > 0 ? round($averageRate) : 0,
                     'total_verses_recited' => $totalVerses,
                     'id' => $recitationsPerSurah->first()->id,
-                    "percentage"=>round($totalVerses/$recitationsPerSurah->first()->surah->total_verses *100 ,2)
+                    "percentage" => round($totalVerses / $recitationsPerSurah->first()->surah->total_verses * 100, 2)
                 ];
             })->values();
     }
-    function deletRecitation(
-        $lesson_id,
-        $student_id,
-        $surah_id
-    ) {
-
+    function deletRecitation($lesson_id, $student_id, $surah_id)
+    {
         $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("surah_id", $surah_id)->where("student_id", $student_id)->delete();
         return $recitations;
+    }
+    function closeLesson($lesson_id)
+    {
+        $lesson = Lesson::find($lesson_id);
+        $lesson->finished_at = date("Y-m-d H:i:s");
+        $lesson->save();
+        return response()->json(["data" => $lesson->finished_at, "status" => 200], 200);
+    }
+    public function showArabicDate($date)
+    {
+        $date = Carbon::parse($date);
+        $day = $date->format('l');
+        $dayNumber = $date->format('j');
+        $month = $date->format('F');
+        $year = $date->format('Y');
+
+        $daysInArabic = [
+            'Saturday' => 'السبت',
+            'Sunday' => 'الأحد',
+            'Monday' => 'الإثنين',
+            'Tuesday' => 'الثلاثاء',
+            'Wednesday' => 'الأربعاء',
+            'Thursday' => 'الخميس',
+            'Friday' => 'الجمعة',
+        ];
+
+        $monthsInArabic = [
+            'January' => 'يناير',
+            'February' => 'فبراير',
+            'March' => 'مارس',
+            'April' => 'أبريل',
+            'May' => 'مايو',
+            'June' => 'يونيو',
+            'July' => 'يوليو',
+            'August' => 'أغسطس',
+            'September' => 'سبتمبر',
+            'October' => 'أكتوبر',
+            'November' => 'نوفمبر',
+            'December' => 'ديسمبر',
+        ];
+
+        $smartDate = "{$daysInArabic[$day]}، $dayNumber {$monthsInArabic[$month]} $year";
+        return $smartDate;
     }
 }

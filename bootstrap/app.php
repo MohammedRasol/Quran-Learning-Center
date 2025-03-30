@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Middleware\IsLessonNotFinishedYet;
 use App\Http\Middleware\IsLessonRunning;
+use App\Http\Middleware\IsShaikhInLesson;
 use App\Http\Middleware\IsStudentHaveRecitation;
 use App\Http\Middleware\IsStudentInLesson;
 use App\Http\Middleware\IsSurahInStudentRecitations;
@@ -20,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             "IsStudentInLesson" => IsStudentInLesson::class,
             "IsSurahInStudentRecitations" => IsSurahInStudentRecitations::class,
             "IsStudentHaveRecitation" => IsStudentHaveRecitation::class,
+            "IsShaikhInLesson" => IsShaikhInLesson::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

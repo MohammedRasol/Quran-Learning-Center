@@ -17858,3 +17858,28 @@ html.maximized-card {
   opacity: 0.8;
   margin: 5px;
 }
+
+.hide-on-md {
+  display: table-cell;
+}
+
+/* Hide only on small screens (576px–767px) */
+@media (min-width: 576px) {
+  .hide-on-md {
+    display: none;
+  }
+}
+
+.hide-on-sm {
+  display: table-cell;
+}
+
+/* Hide only on small screens (576px–767px) */
+@media (max-width: 576px) {
+  .hide-on-sm {
+    display: none;
+  }
+}
+.text-align-center{
+  text-align: center !important;
+}
