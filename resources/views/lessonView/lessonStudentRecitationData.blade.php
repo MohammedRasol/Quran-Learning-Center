@@ -141,7 +141,7 @@
                                                     </thead>
                                                     <tbody>
 
-                                                        @set($recitationPercenter = ($recitation['total_verses_recited'] / $recitation['surah']->total_verses) * 100)
+                                                        @set($recitationPercenter = $recitation['percentage'])
                                                         @set($color = 'primary')
                                                         @if ($recitationPercenter <= 25)
                                                             @set($color = 'secondary')

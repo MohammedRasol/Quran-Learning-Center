@@ -79,7 +79,7 @@ class LessonController extends Controller
             // $date = Carbon::parse($lesson->finished_at)->locale('ar');
             // $lesson->finished_at = $date->format('l، j F Y'); // Force Arabic locale
         }
-         return view("lessonView.lessonData", compact("lesson", "students", "isRunning"));
+        return view("lessonView.lessonData", compact("lesson", "students", "isRunning"));
     }
     function lessonStudentData($lesson_id, $student_id)
     {
@@ -87,9 +87,20 @@ class LessonController extends Controller
         $student = Student::with("recitations.lesson")->where("id", $student_id)->first();
         $surahs = Surah::get();
         $studentRecitationSummary = $this->showStudentRecitationSummary($student, $lesson_id);
-
         return view("lessonView.lessonStudentData", compact("lesson", "surahs", "student", "studentRecitationSummary"));
     }
+
+    function lessonStudentActivities($lesson_id, $student_id)
+    {
+        $lesson = Lesson::findOrFail($lesson_id);
+        $student = Student::with("recitations.lesson")->where("id", $student_id)->first();
+        $surahs = Surah::get();
+        $recitations = $student->recitations->sortBy('from_verse')->groupBy('surah_id');
+        $studentRecitationSummary = $this->showStudentRecitationSummary($student, $lesson_id);
+
+        return view("lessonView.lessonStudentActivities", compact("lesson", "surahs", "student", "studentRecitationSummary","recitations"));
+    }
+
     function getLessonSurahInfo($surah_id, $lesson_id, $student_id)
     {
         $data = [
@@ -124,6 +135,7 @@ class LessonController extends Controller
                 // $ratePercentage = $surahTotalVerses > 0
                 //     ? round(($totalVerses ) * $averageRate * 20, 2) // Assuming rate is 0-5 scale
                 //     : 0;
+
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
                     'rate' => $averageRate > 0 ? round($averageRate) : 0,

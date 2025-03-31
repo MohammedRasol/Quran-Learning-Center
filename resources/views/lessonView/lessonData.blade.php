@@ -95,7 +95,7 @@
                                                             @endif
                                                             <td class="hide-on-sm text-center"  >
                                                                 <a class="btn btn-secondary btn-sm"
-                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
+                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities">
                                                                     <i class="fa-solid fa-clock-rotate-left"></i>
                                                                 </a>
                                                             </td>
@@ -129,7 +129,8 @@
                                                                             </div>
                                                                         </a>
                                                                         <a class="dropdown-item bg-secondary text-light  btn btn-sm p-2"
-                                                                            href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
+                                                                        href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities">
+
                                                                             <div
                                                                                 class=" d-flex pr-2 pl-3 justify-content-between">
                                                                                 سجل تسميع الدرس

@@ -73,53 +73,7 @@
                                                     {{ $student->getFullName() }}</label>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-4 col-sm-12  pt-0">
-                                            <label for="surah_id" class="form-label">إختر
-                                                السورة</label>
-                                            <select class="form-select" id='surah_id'
-                                                onchange="getSurahData(this,'{{ $student->id }}','{{ $lesson->id }}');">
-
-                                                <option value="">السورة</option>
-                                                @foreach ($surahs as $surah)
-                                                    <option value='{{ $surah->id }}'>
-                                                        {{ $surah->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('surah_id')
-                                                <div class="alert alert-danger h-20 ">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <div class="col-md-3 col-sm-12  pt-0">
-                                            <label for="name" class="form-label">من أية </label>
-                                            <select class="form-select" id='from_verse' onchange="verseChange(this)">
-                                                <option value="">من أية</option>
-                                            </select>
-
-                                            <div class="alert alert-danger h-20 d-none"> </div>
-
-                                        </div>
-
-                                        <div class="col-md-3 col-sm-12  pt-0">
-                                            <label for="name" class="form-label">الى أيه</label>
-                                            <select class="form-select" id='to_verse'>
-                                                <option value="">الى أيه</option>
-                                            </select>
-                                            <div class="alert alert-danger h-20 d-none"> </div>
-                                        </div>
-                                        <div class="col-md-2 col-sm-12  pt-0  d-none">
-                                            <label for="name" class="form-label">ملاحظات</label>
-                                            <div class="alert  p-1 d-none" id='recitations_note'></div>
-                                        </div>
-
-                                        <div class="col-md-8 col-sm-12 ">
-                                            <label for="name" class="form-label">ملاحظات على التسميع</label>
-                                            <input class="form-control" id='notes'>
-                                        </div>
-
-                                        <div class="col-md-2 col-sm-12  ">
+                                        {{-- <div class="col-md-2 col-sm-12  ">
                                             <div class="container mt-md-5 mt-sm-2">
                                                 <div class="star-rating d-flex justify-content-evenly" id="starRating">
                                                     <i class="fa-solid fa-star" data-value="1"></i>
@@ -131,16 +85,16 @@
                                                 <p class="text-center mt-3" id="ratingText">التقييم : <span
                                                         id="ratingValue">0</span> / 5</p>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="col-md-8 col-sm-12">
+                                        <div class="col-md-12 col-sm-12">
                                             <div class="table-container"
                                                 style="overflow-y: auto; height: fit-content; max-height:30vh ;border:1px #ddd solid ">
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th style="width: 10%">*</th>
-                                                            <th align="center" style="width:25%">السورة</th>
+                                                            <th style="width: 2% !important"></th>
+                                                            <th style="width:23%">السورة</th>
                                                             <th style="width:20%">الإنجاز</th>
                                                             <th style="width: 15%" align="center">النسبة</th>
                                                             <th style="width: 15%" align="center">التقييم</th>
@@ -151,7 +105,7 @@
                                                     </thead>
                                                     <tbody>
                                                         @foreach ($studentRecitationSummary as $key => $recitation)
-                                                            @set($recitationPercenter = ($recitation['total_verses_recited'] / $recitation['surah']->total_verses) * 100)
+                                                            @set($recitationPercenter = $recitation['percentage'])
                                                             @set($color = 'primary')
                                                             @if ($recitationPercenter <= 25)
                                                                 @set($color = 'secondary')
@@ -182,15 +136,47 @@
                                                                     {{ round($recitation['rate']) }}
                                                                 </td>
                                                                 <td>
-                                                                    {{-- <a href='/lesson/{{ $lesson->id }}/student/{{ $student->id }}/surah/{{ $recitation['surah']->id }}/edit' type='button' class="btn btn-sm btn-primary">
-                                                                        <i class="fa-solid fa-pen-to-square"></i>
-                                                                    </a> --}}
                                                                     <button type='button' class="btn btn-sm btn-danger"
                                                                         onclick="deleteRecitations(this,'{{ $recitation['surah']->id }}','{{ $student->id }}','{{ $lesson->id }}');">
                                                                         <i class="fa-solid fa-xmark"></i>
                                                                     </button>
                                                                 </td>
                                                             </tr>
+                                                            @foreach ($recitations as $rec)
+                                                            @set($rowColor = getBootStrapRandoomColors(false,false))
+                                                                @foreach ($rec as $recKey => $surahRecitations)
+                                                                    @if ($surahRecitations->surah_id == $recitation['surah']->id)
+                                                                        <tr class="align-middle">
+                                                                            <td class="bg-{{ $rowColor }} text-light"> </td>
+                                                                            <td class="bg-{{ $rowColor }} text-light">
+                                                                                {{ $surahRecitations->from_verse }}</td>
+                                                                            <td class="bg-{{ $rowColor }} text-light">
+                                                                                {{ $surahRecitations->to_verse }}
+                                                                            </td>
+                                                                            <td class="bg-{{ $rowColor }} text-light">
+                                                                                <span
+                                                                                    class="badge text-bg-{{ $color }}">
+                                                                                    {{ number_format($recitationPercenter, 1) }}%
+                                                                                </span>
+                                                                            </td>
+                                                                            <td class="bg-{{ $rowColor }} text-light">
+                                                                                <i
+                                                                                    class="fa-solid fa-star text-warning"></i>
+                                                                                {{ round($surahRecitations->rate) }}
+                                                                            </td>
+                                                                            <td class="bg-{{ $rowColor }} text-light">
+                                                                                <button type='button'
+                                                                                    class="btn btn-sm btn-danger"
+                                                                                    onclick="deleteRecitationsById(this,'{{ $surahRecitations->id }}','{{ $student->id }}','{{ $lesson->id }}');">
+                                                                                    <i class="fa-solid fa-xmark"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @else
+                                                                        @continue;
+                                                                    @endif
+                                                                @endforeach
+                                                            @endforeach
                                                         @endforeach
                                                     </tbody>
                                                 </table>
@@ -321,7 +307,7 @@
                             var fromVerseOptions = "";
                             var toVerseOptions = "";
                             fromVerseOptions += `<option value=''>من آية</option>`;
-                            for (let index = 1; index <= total_verses; index++) {
+                            for (let index = 1; index < total_verses; index++) {
                                 if (!range.includes(index)) {
                                     fromVerseOptions += `<option value=${index}>${index}</option>`;
                                 }
@@ -355,24 +341,19 @@
                 alert()
                 return;
             }
-            console.log(range);
-            
             const firstOption = parseInt(el.value);
             const lastOption = parseInt(el.querySelector('select option:last-child').value);
             let toVerseOptions = "";
             let count = 0;
-            var addOne=1;
-            if(firstOption==lastOption)
-            addOne=0;
-            for (let index = firstOption + addOne; index <= (lastOption + addOne); index++) {
+            for (let index = firstOption + 1; index <= (lastOption + 1); index++) {
                 if (!range.includes(index)) {
                     count++;
                     toVerseOptions += `<option value=${index}>${index}</option>`;
                 } else {
                     if (count == 0) {
-                        if (firstOption == 1) {//في حالة تبقى تسميع الاية الاولى 
+                        if (firstOption == 1) { //في حالة تبقى تسميع الاية الاولى 
                             toVerseOptions += `<option value=${firstOption}>${firstOption}</option>`;
-                        }else{
+                        } else {
                             toVerseOptions += `<option value=''>يرجى إختيار من ايه اخرى </option>`;
                         }
                     }

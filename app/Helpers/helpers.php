@@ -1,4 +1,5 @@
 <?php
+
 use Carbon\Carbon;
 
 if (!function_exists('getArabicDate')) {
@@ -40,4 +41,24 @@ if (!function_exists('getArabicDate')) {
         return $smartDate; // Outputs: السبت، 29 مارس 2025
 
     }
+}
+
+function getBootStrapRandoomColors($withLight = true, $withDark = true)
+{
+    // Array of Bootstrap contextual colors
+    $bootstrapColors = [
+        'primary',
+        'secondary',
+        'success',
+        'danger',
+        'warning',
+        'info',
+        'light',
+        'dark',
+    ];
+    $colorsToRemove = [!$withLight ? 'light' : '', !$withDark ? 'dark' : ''];
+    $bootstrapColors = array_diff($bootstrapColors, $colorsToRemove);
+
+    $randomColor = collect($bootstrapColors)->random();
+    return  $randomColor;
 }

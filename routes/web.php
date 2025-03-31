@@ -18,6 +18,7 @@ Route::resource("shaikh", ShaikhController::class)->middleware("auth");
 Route::prefix('lesson/')->middleware("auth")->group(function () {
     Route::get('show/{lesson_id}', [LessonController::class, 'openClassRoomLesson'])->name("openClassRoomLesson");
     Route::get('{lesson_id}/student/{student_id}', [LessonController::class, 'lessonStudentData'])->name("lessonStudentData")->middleware("IsStudentInLesson");
+    Route::get('{lesson_id}/student/{student_id}/activities', [LessonController::class, 'lessonStudentActivities'])->name("lessonStudentActivities")->middleware("IsStudentInLesson");
     // Route::get('{lesson_id}/student/{student_id}/surah/{surah_id}/edit', [LessonController::class, 'editLessonStudentData'])->name("editLessonStudentData")->middleware(["IsStudentInLesson", "IsSurahInStudentRecitations"]);
     Route::resource("", LessonController::class)->parameters(['' => 'id'])->names('lesson');
 });
