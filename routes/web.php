@@ -44,18 +44,10 @@ Route::prefix('ajax/')->middleware('auth')->group(function () {
     Route::get('getLessonSurahInfo/{surah_id}/{lesson_id}/{student_id}', [LessonController::class, "getLessonSurahInfo"])->middleware("IsStudentInLesson");
     Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "saveRecitations"])->middleware(["IsStudentInLesson"]);
     Route::delete('deletRecitation/{lesson_id}/{student_id}/{surah_id}', [LessonController::class, "deletRecitation"])->middleware(["IsSurahInStudentRecitations"]);
+    Route::delete('deletRecitationById/{lesson_id}/{student_id}/{surah_id}/{recitation_id}', [LessonController::class, "deletRecitationById"])->middleware(["IsSurahInStudentRecitations"]);
     Route::put('closeLesson/{lesson_id}', [LessonController::class, "closeLesson"])->middleware(["IsShaikhInLesson"]);
 });
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('call-helper', function () {
-
-    $mdY = getArabicDate('2022-02-12');
-    var_dump("Converted into 'MDY': " . $mdY);
-
-    $ymd = getArabicDate('02-12-2022');
-    var_dump("Converted into 'YMD': " . $ymd);
-});
-// require __DIR__ . '/auth.php';

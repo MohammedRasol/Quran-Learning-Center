@@ -66,30 +66,14 @@
                                 id="form">
                                 @csrf
                                 <div class="card-body">
-                                    <div class="row g-4">
-                                        <div class="col-md-12 text-primary ">
-                                            <div class="col-md-4 col-sm-12 alert alert-info">
-                                                <label for="user_id" class="form-label fw-bold">الطالب :
-                                                    {{ $student->getFullName() }}</label>
-                                            </div>
+                                    <div class="row  ">
+                                        <div class="col-md-4 col-sm-12 alert alert-info mrl-1">
+                                            <label for="user_id" class="form-label fw-bold">الطالب :
+                                                {{ $student->getFullName() }}</label>
                                         </div>
-                                        {{-- <div class="col-md-2 col-sm-12  ">
-                                            <div class="container mt-md-5 mt-sm-2">
-                                                <div class="star-rating d-flex justify-content-evenly" id="starRating">
-                                                    <i class="fa-solid fa-star" data-value="1"></i>
-                                                    <i class="fa-solid fa-star" data-value="2"></i>
-                                                    <i class="fa-solid fa-star" data-value="3"></i>
-                                                    <i class="fa-solid fa-star" data-value="4"></i>
-                                                    <i class="fa-solid fa-star" data-value="5"></i>
-                                                </div>
-                                                <p class="text-center mt-3" id="ratingText">التقييم : <span
-                                                        id="ratingValue">0</span> / 5</p>
-                                            </div>
-                                        </div> --}}
-
                                         <div class="col-md-12 col-sm-12 p-0">
-                                            <div class="recitation-container" style="max-height: 70vh; overflow-y: auto;">
-                                                <div class="recitation-grid">
+                                            <div class="recitation-container" style="max-height: 70vh; overflow-y: scroll;">
+                                                <div class=" ">
                                                     @foreach ($studentRecitationSummary as $key => $recitation)
                                                         @set($recitationPercenter = $recitation['percentage'])
                                                         @set($color = 'primary')
@@ -111,85 +95,159 @@
                                                             @set($strokeColor = 'var(--bs-success)')
                                                         @endif
                                                         <div class="recitation-card">
-                                                            <div class="card-header">
-                                                                <h3>{{ $recitation['surah']->name }}</h3>
-                                                                {{-- <button type="button" class="delete-btn" 
+                                                            <div class="accordion-item mt-1">
+                                                                <div class="card-header" data-bs-toggle="collapse"
+                                                                    data-bs-target="#{{ $recitation['surah']->name }}"
+                                                                    aria-expanded="true"
+                                                                    aria-controls="{{ $recitation['surah']->name }}">
+                                                                    <h2 class="accordion-header ">
+
+                                                                        {{ $recitation['surah']->name }}
+
+                                                                    </h2>
+                                                                    {{-- <h3>{{ $recitation['surah']->name }}</h3> --}}
+                                                                    {{-- <button type="button" class="delete-btn" 
                                                                     onclick="deleteRecitations(this,'{{ $recitation['surah']->id }}','{{ $student->id }}','{{ $lesson->id }}');">
                                                                     <i class="fa-solid fa-xmark"></i>
                                                                 </button> --}}
-                                                            </div>
-
-                                                            <div class="card-body auto-scroll p-1">
-                                                                <div class="row col-12">
-                                                                    <div
-                                                                        class="col d-flex justify-content-between align-items-center">
-                                                                        <div class="progress-circle">
-                                                                            <svg class="progress-ring w-100 h-100">
-                                                                                <circle class="progress-ring__background"
-                                                                                    cx="40" cy="40" r="36" />
-                                                                                <circle
-                                                                                    class="progress-ring__circle bg-{{ $strokeColor }}"
-                                                                                    cx="40" cy="40" r="36"
-                                                                                    style="stroke: {{ $strokeColor }}; stroke-dasharray: {{ 226.2 * ($recitationPercenter / 100) }} 226.2;" />
-                                                                            </svg>
-                                                                            <span
-                                                                                class="percentage">{{ number_format($recitationPercenter, 1) }}%</span>
-                                                                        </div>
+                                                                </div>
+                                                                <div id="{{ $recitation['surah']->name }}"
+                                                                    class="accordion-collapse collapse   auto-scroll p-1 "
+                                                                    data-bs-parent="#accordionExample">
+                                                                    {{-- <div class="card-body auto-scroll p-1"> --}}
+                                                                    <div class="row col-12">
                                                                         <div
-                                                                            class="col d-flex justify-content-evenly align-items-center">
-                                                                            <table
-                                                                                class="table table-sm align-middle text-center">
-                                                                                <tbody>
-                                                                                    <tr>
-                                                                                        <td>
-                                                                                            التقييم الشامل : 4 <i class="fa-solid fa-star text-warning"></i>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                    <tr>
-                                                                                        <td>
-                                                                                            تبقى 200 آية
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
+                                                                            class="col d-flex justify-content-between align-items-center">
+                                                                            <div class="progress-circle ">
+                                                                                <svg class="progress-ring w-100 h-100 ">
+                                                                                    <circle
+                                                                                        class="progress-ring__background bg-{{ $color }}"
+                                                                                        cx="40" cy="40"
+                                                                                        r="36" />
+                                                                                    <circle
+                                                                                        class="progress-ring__circle bg-{{ $color }}"
+                                                                                        cx="40" cy="40" r="36"
+                                                                                        style="stroke: {{ $strokeColor }}; stroke-dasharray: {{ 226.2 * ($recitationPercenter / 100) }} 226.2;" />
+                                                                                </svg>
+                                                                                <span
+                                                                                    class="percentage">{{ number_format($recitationPercenter, 1) }}%</span>
+                                                                            </div>
+                                                                            <div
+                                                                                class="col d-flex justify-content-evenly align-items-center">
+                                                                                <table
+                                                                                    class="table table-sm align-middle text-center">
+                                                                                    <tbody>
+                                                                                        <tr>
+
+                                                                                            <td colspan="2"
+                                                                                                align="center">
+                                                                                                التقييم الشامل :
+                                                                                                {{ $recitation['rate'] }}
+                                                                                                <i
+                                                                                                    class="fa-solid fa-star text-warning"></i>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            @if ($recitation['total_verses_recited'] == $recitation['total_verses_in_surah'])
+                                                                                                <td>
+                                                                                                    تم تسميع السورة كاملة
+                                                                                                </td>
+
+                                                                                                <td>
+                                                                                                    ما شاءالله
+                                                                                                </td>
+                                                                                            @else
+                                                                                                <td>
+                                                                                                    سمع
+                                                                                                    {{ $recitation['total_verses_recited'] }}
+                                                                                                    آية
+                                                                                                </td>
+
+                                                                                                <td>
+                                                                                                    تبقى
+                                                                                                    {{ $recitation['total_verses_in_surah'] - $recitation['total_verses_recited'] }}
+                                                                                                    آية
+                                                                                                </td>
+                                                                                            @endif
+
+
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
 
-                                                                @foreach ($recitations as $rec)
-                                                                    @set($rowColor = 'info')
-                                                                    @foreach ($rec as $recKey => $surahRecitations)
-                                                                        @if ($surahRecitations->surah_id == $recitation['surah']->id)
-                                                                            <div class="verse-detail bg-{{ $rowColor }}">
-                                                                                <div class="verse-range">
-                                                                                    <span>من آيه: <button class="btn">
-                                                                                            {{ $surahRecitations->from_verse }}</button></span>
-                                                                                    <span>إلى آيه:<button class="btn">
-                                                                                            {{ $surahRecitations->to_verse }}</button></span>
+                                                                    @foreach ($recitations as $rec)
+                                                                        @set($rowColor = 'info')
+                                                                        @foreach ($rec as $recKey => $surahRecitations)
+                                                                            @if ($surahRecitations->surah_id == $recitation['surah']->id)
+                                                                                <div
+                                                                                    class="verse-detail bg-{{ $rowColor }}">
+                                                                                    <div class="verse-range">
+                                                                                        <span>من آيه: <button
+                                                                                                class="btn">
+                                                                                                {{ $surahRecitations->from_verse }}</button></span>
+                                                                                        <span>إلى آيه:<button
+                                                                                                class="btn">
+                                                                                                {{ $surahRecitations->to_verse }}</button></span>
 
-                                                                                    <span class="rating">
-                                                                                        <i
-                                                                                            class="fa-solid fa-star text-warning"></i>
-                                                                                        {{ round($surahRecitations->rate) }}
-                                                                                    </span>
-                                                                                    <button type="button"
-                                                                                        class="delete-btn-sm"
-                                                                                        onclick="deleteRecitationsById(this,'{{ $surahRecitations->id }}','{{ $student->id }}','{{ $lesson->id }}');">
-                                                                                        <i class="fa-solid fa-xmark"></i>
-                                                                                    </button>
+                                                                                        <span class="rating">
+                                                                                            <i
+                                                                                                class="fa-solid fa-star text-warning"></i>
+                                                                                            {{ round($surahRecitations->rate) }}
+                                                                                        </span>
+                                                                                        <span class="rating">* 3 آيات
+                                                                                        </span>
+                                                                                        <div class="dropdown">
+                                                                                            <a class="btn btn-secondary "
+                                                                                                href="#"
+                                                                                                role="button"
+                                                                                                id="dropdownMenuLink"
+                                                                                                data-bs-toggle="dropdown"
+                                                                                                aria-expanded="false">
+                                                                                                <i
+                                                                                                    class="fa-solid fa-ellipsis-vertical"></i>
+                                                                                            </a>
+                                                                                            <div class="dropdown-menu p-0"
+                                                                                                aria-labelledby="dropdownMenuLink">
+                                                                                                <a class="dropdown-item bg-primary text-light btn btn-sm p-2"
+                                                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
+                                                                                                    <div
+                                                                                                        class=" d-flex pr-2 pl-3 justify-content-between">
+                                                                                                        تعديل الملاحظات
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-file-lines"></i>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                                <a class="dropdown-item bg-danger text-light  btn btn-sm p-2"
+                                                                                                    href="javascript:void(0)">
+
+                                                                                                    <div class=" d-flex pr-2 pl-3 justify-content-between"
+                                                                                                        onclick="deleteRecitationById(this,'{{ $lesson->id }}','{{$student->id }}','{{   $surahRecitations->surah_id }}','{{ $surahRecitations->id }}');">
+                                                                                                        حذف التسميع
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-remove"></i>
+                                                                                                    </div>
+                                                                                                </a>
+
+
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                    <p> ملاحظات التسميع :
+                                                                                        {{ $surahRecitations->notes }}
+                                                                                    </p>
+
                                                                                 </div>
-                                                                         
-                                                                                <p> ملاحظات التسميع :
-                                                                                    تمسيع جميل
-                                                                                </p>
-                                                                            </div>
-                                                                        @else
-                                                                            @continue;
-                                                                        @endif
+                                                                            @else
+                                                                                @continue;
+                                                                            @endif
+                                                                        @endforeach
                                                                     @endforeach
-                                                                @endforeach
+                                                                </div>
                                                             </div>
-                                                        </div>
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -198,13 +256,13 @@
                                 </div>
 
                                 <!-- Card Footer -->
-                                <div class="card-footer ">
+                                {{-- <div class="card-footer ">
                                     <div class=" col-md-2 col-sm-12 ">
                                         <button class="btn btn-success w-100" type="button"
                                             onclick="saveRecitations('{{ $student->id }}','{{ $lesson->id }}');">حفظ
                                             التسميعات</button>
                                     </div>
-                                </div>
+                                </div> --}}
                             </form>
                         </div>
                     </div>
@@ -407,6 +465,30 @@
             });
         }
 
+        function deleteRecitationById(el, lessonId, studentId,surahId ,recitation_id) {
+            let tr = el.closest("tr");
+            if (confirm("سوف يتم حذف هذا التمسيع ولا يمكن التراجع! ")) {
+
+                $.ajax({
+                    url: `/ajax/deletRecitationById/${lessonId}/${studentId}/${surahId}/${recitation_id}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                    },
+                    success: function(response) {
+                        if (response.status == 200) {
+                            location.reload();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+
+                // $(tr).fadeOut();
+            }
+        }
+
         function deleteRecitations(el, surahId, studentId, lessonId) {
             let tr = el.closest("tr");
             if (confirm("سوف يتم حذف هذا التمسيع ولا يمكن التراجع! ")) {
@@ -454,8 +536,8 @@
         transition: transform 0.3s ease;
     }
 
-    .recitation-card:hover {
-        transform: translateY(-5px);
+    .card-header:hover {
+        cursor: pointer;
     }
 
     .card-header {

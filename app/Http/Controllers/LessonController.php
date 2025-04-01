@@ -97,8 +97,7 @@ class LessonController extends Controller
         $surahs = Surah::get();
         $recitations = $student->recitations->sortBy('from_verse')->groupBy('surah_id');
         $studentRecitationSummary = $this->showStudentRecitationSummary($student, $lesson_id);
-
-        return view("lessonView.lessonStudentActivities", compact("lesson", "surahs", "student", "studentRecitationSummary","recitations"));
+        return view("lessonView.lessonStudentActivities", compact("lesson", "surahs", "student", "studentRecitationSummary", "recitations"));
     }
 
     function getLessonSurahInfo($surah_id, $lesson_id, $student_id)
@@ -135,13 +134,13 @@ class LessonController extends Controller
                 // $ratePercentage = $surahTotalVerses > 0
                 //     ? round(($totalVerses ) * $averageRate * 20, 2) // Assuming rate is 0-5 scale
                 //     : 0;
-
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
                     'rate' => $averageRate > 0 ? round($averageRate) : 0,
                     'total_verses_recited' => $totalVerses,
                     'id' => $recitationsPerSurah->first()->id,
-                    "percentage" => round($totalVerses / $recitationsPerSurah->first()->surah->total_verses * 100, 2)
+                    "percentage" => round($totalVerses / $recitationsPerSurah->first()->surah->total_verses * 100, 2),
+                    "total_verses_in_surah" => $recitationsPerSurah->first()->surah->total_verses
                 ];
             })->values();
     }
@@ -150,47 +149,17 @@ class LessonController extends Controller
         $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("surah_id", $surah_id)->where("student_id", $student_id)->delete();
         return $recitations;
     }
+    function deletRecitationById($lesson_id, $student_id, $surah_id, $recitation_id)
+    {
+        $recitation = StudentLessonRecitation::where("id", $recitation_id)->where("lesson_id", $lesson_id)->where("surah_id", $surah_id)->where("student_id", $student_id)->first();
+        $recitation->delete();
+        return response()->json(["data" => "", "status" => 200], 200);
+    }
     function closeLesson($lesson_id)
     {
         $lesson = Lesson::find($lesson_id);
         $lesson->finished_at = date("Y-m-d H:i:s");
         $lesson->save();
         return response()->json(["data" => $lesson->finished_at, "status" => 200], 200);
-    }
-    public function showArabicDate($date)
-    {
-        $date = Carbon::parse($date);
-        $day = $date->format('l');
-        $dayNumber = $date->format('j');
-        $month = $date->format('F');
-        $year = $date->format('Y');
-
-        $daysInArabic = [
-            'Saturday' => 'السبت',
-            'Sunday' => 'الأحد',
-            'Monday' => 'الإثنين',
-            'Tuesday' => 'الثلاثاء',
-            'Wednesday' => 'الأربعاء',
-            'Thursday' => 'الخميس',
-            'Friday' => 'الجمعة',
-        ];
-
-        $monthsInArabic = [
-            'January' => 'يناير',
-            'February' => 'فبراير',
-            'March' => 'مارس',
-            'April' => 'أبريل',
-            'May' => 'مايو',
-            'June' => 'يونيو',
-            'July' => 'يوليو',
-            'August' => 'أغسطس',
-            'September' => 'سبتمبر',
-            'October' => 'أكتوبر',
-            'November' => 'نوفمبر',
-            'December' => 'ديسمبر',
-        ];
-
-        $smartDate = "{$daysInArabic[$day]}، $dayNumber {$monthsInArabic[$month]} $year";
-        return $smartDate;
     }
 }
