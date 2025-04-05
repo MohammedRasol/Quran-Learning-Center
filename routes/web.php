@@ -44,7 +44,7 @@ Route::prefix('ajax/')->middleware('auth')->group(function () {
     Route::get('getLessonSurahInfo/{surah_id}/{lesson_id}/{student_id}', [LessonController::class, "getLessonSurahInfo"])->middleware("IsStudentInLesson");
     Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "saveRecitations"])->middleware(["IsStudentInLesson"]);
     Route::delete('deletRecitation/{lesson_id}/{student_id}/{surah_id}', [LessonController::class, "deletRecitation"])->middleware(["IsSurahInStudentRecitations"]);
-    Route::delete('deletRecitationById/{lesson_id}/{student_id}/{surah_id}/{recitation_id}', [LessonController::class, "deletRecitationById"])->middleware(["IsSurahInStudentRecitations"]);
+    Route::get('deletRecitationById/{lesson_id}/{student_id}/{surah_id}/{recitation_id}', [LessonController::class, "deletRecitationById"])->middleware(["IsSurahInStudentRecitations"]);
     Route::put('closeLesson/{lesson_id}', [LessonController::class, "closeLesson"])->middleware(["IsShaikhInLesson"]);
 });
 

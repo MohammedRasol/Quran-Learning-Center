@@ -116,24 +116,30 @@ class LessonController extends Controller
         return response()->json(["data" => $data, "status" => 200], 200);
     }
 
-    public function showStudentRecitationSummary($student, $lesson_id)
+
+    public function showStudentRecitationSummary($student, $lesson_id, $surah_id = null)
     {
+        // Start with the recitations collection
+        $recitations = $student->recitations;
+    
+        // Apply lesson_id filter if provided
+        if ($lesson_id !== null) {
+            $recitations = $recitations->where("lesson_id", $lesson_id);
+        }
+    
+        // Apply surah_id filter if provided
+        if ($surah_id !== null) {
+            $recitations = $recitations->where("surah_id", $surah_id);
+        }
+    
         // Calculate summation of verses per surah
-        return $student->recitations
-            ->groupBy("surah")
+        return $recitations->groupBy("surah")
             ->map(function ($recitationsPerSurah) {
                 $totalVerses = $recitationsPerSurah->sum(function ($recitation) {
                     return $recitation->to_verse - $recitation->from_verse + 1; // Total verses recited
                 });
                 $averageRate = $recitationsPerSurah->avg('rate');
-                // $ratePercentage=
-                // Get the total verses in the surah (assuming surah relationship exists)
-                // $surahTotalVerses = $recitationsPerSurah->first()->surah->total_verses;
-
-                // Calculate rate percentage based on total verses recited vs surah total
-                // $ratePercentage = $surahTotalVerses > 0
-                //     ? round(($totalVerses ) * $averageRate * 20, 2) // Assuming rate is 0-5 scale
-                //     : 0;
+    
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
                     'rate' => $averageRate > 0 ? round($averageRate) : 0,
@@ -152,8 +158,11 @@ class LessonController extends Controller
     function deletRecitationById($lesson_id, $student_id, $surah_id, $recitation_id)
     {
         $recitation = StudentLessonRecitation::where("id", $recitation_id)->where("lesson_id", $lesson_id)->where("surah_id", $surah_id)->where("student_id", $student_id)->first();
+
         $recitation->delete();
-        return response()->json(["data" => "", "status" => 200], 200);
+        $student = Student::find($student_id);
+
+        return response()->json(["data" => $this->showStudentRecitationSummary($student, $lesson_id, $surah_id), "status" => 200], 200);
     }
     function closeLesson($lesson_id)
     {

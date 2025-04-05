@@ -287,20 +287,23 @@
                     let response = data.data ? data.data : null;
                     const allNumbers = new Set();
 
+                    $("#from_verse").html(`<option value=''>من آية</option>`);
                     if (response) {
+                        range = [];
                         var total_verses = response["surah"]["total_verses"];
                         var msg = "";
                         var completed = false;
+
+
                         for (let index = 0; index < response.recitations.length; index++) {
 
                             const element = response.recitations[index];
 
-
-                            if (total_verses == element.to_verse) {
-                                msg = "تم تسميع السورة بالكامل ";
-                                completed = true;
-                                break;
+                            // Add all numbers in this range to the set
+                            for (let i = element.from_verse; i <= element.to_verse; i++) {
+                                allNumbers.add(i);
                             }
+
                             if (!recitations[surah.value]) {
                                 recitations[surah.value] = [];
                             }
@@ -309,15 +312,18 @@
                                 to: element.to_verse
                             };
 
-                            // Add all numbers in this range to the set
-                            for (let i = element.from_verse; i <= element.to_verse; i++) {
-                                allNumbers.add(i);
-                            }
+
+                        }
+
+
+                        range = Array.from(allNumbers).sort((a, b) => a - b);
+                        if (findMissingNumbers(range,1,total_verses).length==0) {
+                            msg = "تم تسميع السورة بالكامل ";
+                            completed = true;
                         }
 
                         if (!completed) {
                             // Convert set to sorted array
-                            range = Array.from(allNumbers).sort((a, b) => a - b);
                             var fromVerseOptions = "";
                             var toVerseOptions = "";
                             fromVerseOptions += `<option value=''>من آية</option>`;
@@ -355,24 +361,26 @@
                 alert()
                 return;
             }
-            console.log(range);
-            
+     
+
             const firstOption = parseInt(el.value);
             const lastOption = parseInt(el.querySelector('select option:last-child').value);
             let toVerseOptions = "";
             let count = 0;
-            var addOne=1;
-            if(firstOption==lastOption)
-            addOne=0;
+            var addOne = 1;
+            if (firstOption == lastOption)
+                addOne = 0;
             for (let index = firstOption + addOne; index <= (lastOption + addOne); index++) {
+                if (index > lastOption)
+                    break;
                 if (!range.includes(index)) {
                     count++;
                     toVerseOptions += `<option value=${index}>${index}</option>`;
                 } else {
                     if (count == 0) {
-                        if (firstOption == 1) {//في حالة تبقى تسميع الاية الاولى 
+                        if (firstOption == 1) { //في حالة تبقى تسميع الاية الاولى 
                             toVerseOptions += `<option value=${firstOption}>${firstOption}</option>`;
-                        }else{
+                        } else {
                             toVerseOptions += `<option value=''>يرجى إختيار من ايه اخرى </option>`;
                         }
                     }
@@ -437,5 +445,18 @@
                 // $(tr).fadeOut();
             }
         }
+
+        function findMissingNumbers(arr,min,max) {
+            const set = new Set(arr);
+            const missing = [];
+             for (let i = 1; i <= max; i++) {
+                if (!set.has(i)) {
+                    missing.push(i);
+                }
+            }
+            return missing;
+        }
+
+    
     </script>
 @endsection

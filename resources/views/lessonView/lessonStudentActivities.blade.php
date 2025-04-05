@@ -94,7 +94,8 @@
                                                         @elseif ($color == 'success')
                                                             @set($strokeColor = 'var(--bs-success)')
                                                         @endif
-                                                        <div class="recitation-card">
+                                                        <div class="recitation-card"
+                                                            id="main-div-{{ $recitation['surah']->id }}">
                                                             <div class="accordion-item mt-1">
                                                                 <div class="card-header" data-bs-toggle="collapse"
                                                                     data-bs-target="#{{ $recitation['surah']->name }}"
@@ -121,16 +122,17 @@
                                                                             <div class="progress-circle ">
                                                                                 <svg class="progress-ring w-100 h-100 ">
                                                                                     <circle
-                                                                                        class="progress-ring__background bg-{{ $color }}"
+                                                                                        class="progress-ring__background  "
                                                                                         cx="40" cy="40"
                                                                                         r="36" />
                                                                                     <circle
+                                                                                        id='circle-{{ $recitation['surah']->id }}'
                                                                                         class="progress-ring__circle bg-{{ $color }}"
                                                                                         cx="40" cy="40" r="36"
                                                                                         style="stroke: {{ $strokeColor }}; stroke-dasharray: {{ 226.2 * ($recitationPercenter / 100) }} 226.2;" />
                                                                                 </svg>
-                                                                                <span
-                                                                                    class="percentage">{{ number_format($recitationPercenter, 1) }}%</span>
+                                                                                <span class="percentage"
+                                                                                    id='percentage-{{ $recitation['surah']->id }}'>{{ number_format($recitationPercenter, 1) }}%</span>
                                                                             </div>
                                                                             <div
                                                                                 class="col d-flex justify-content-evenly align-items-center">
@@ -142,28 +144,34 @@
                                                                                             <td colspan="2"
                                                                                                 align="center">
                                                                                                 التقييم الشامل :
-                                                                                                {{ $recitation['rate'] }}
+                                                                                                <span
+                                                                                                    id='rate-{{ $recitation['id'] }}'>
+                                                                                                    {{ $recitation['rate'] }}</span>
                                                                                                 <i
                                                                                                     class="fa-solid fa-star text-warning"></i>
                                                                                             </td>
                                                                                         </tr>
                                                                                         <tr>
                                                                                             @if ($recitation['total_verses_recited'] == $recitation['total_verses_in_surah'])
-                                                                                                <td>
+                                                                                                <td
+                                                                                                    id='surah-finish-{{ $recitation['surah']->id }}'>
                                                                                                     تم تسميع السورة كاملة
                                                                                                 </td>
 
-                                                                                                <td>
+                                                                                                <td
+                                                                                                    id='verses-left-{{ $recitation['surah']->id }}'>
                                                                                                     ما شاءالله
                                                                                                 </td>
                                                                                             @else
-                                                                                                <td>
+                                                                                                <td
+                                                                                                    id='surah-finish-{{ $recitation['surah']->id }}'>
                                                                                                     سمع
                                                                                                     {{ $recitation['total_verses_recited'] }}
                                                                                                     آية
                                                                                                 </td>
 
-                                                                                                <td>
+                                                                                                <td
+                                                                                                    id='verses-left-{{ $recitation['surah']->id }}'>
                                                                                                     تبقى
                                                                                                     {{ $recitation['total_verses_in_surah'] - $recitation['total_verses_recited'] }}
                                                                                                     آية
@@ -179,11 +187,12 @@
                                                                     </div>
 
                                                                     @foreach ($recitations as $rec)
-                                                                        @set($rowColor = 'info')
+                                                                        @set($rowColor = '#d0e7ec')
                                                                         @foreach ($rec as $recKey => $surahRecitations)
                                                                             @if ($surahRecitations->surah_id == $recitation['surah']->id)
-                                                                                <div
-                                                                                    class="verse-detail bg-{{ $rowColor }}">
+                                                                                <div id='surah-{{ $surahRecitations->id }}'
+                                                                                    class="verse-detail text-dark fw-bold"
+                                                                                    style="background-color:{{ $rowColor }}">
                                                                                     <div class="verse-range">
                                                                                         <span>من آيه: <button
                                                                                                 class="btn">
@@ -197,7 +206,9 @@
                                                                                                 class="fa-solid fa-star text-warning"></i>
                                                                                             {{ round($surahRecitations->rate) }}
                                                                                         </span>
-                                                                                        <span class="rating">* 3 آيات
+                                                                                        <span class="rating">*
+                                                                                            {{ $surahRecitations->to_verse - $surahRecitations->from_verse + 1 }}
+                                                                                            آيات
                                                                                         </span>
                                                                                         <div class="dropdown">
                                                                                             <a class="btn btn-secondary "
@@ -211,7 +222,7 @@
                                                                                             </a>
                                                                                             <div class="dropdown-menu p-0"
                                                                                                 aria-labelledby="dropdownMenuLink">
-                                                                                                <a class="dropdown-item bg-primary text-light btn btn-sm p-2"
+                                                                                                {{-- <a class="dropdown-item bg-primary text-light btn btn-sm p-2"
                                                                                                     href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
                                                                                                     <div
                                                                                                         class=" d-flex pr-2 pl-3 justify-content-between">
@@ -219,12 +230,12 @@
                                                                                                         <i
                                                                                                             class="fa-solid fa-file-lines"></i>
                                                                                                     </div>
-                                                                                                </a>
+                                                                                                </a> --}}
                                                                                                 <a class="dropdown-item bg-danger text-light  btn btn-sm p-2"
                                                                                                     href="javascript:void(0)">
 
                                                                                                     <div class=" d-flex pr-2 pl-3 justify-content-between"
-                                                                                                        onclick="deleteRecitationById(this,'{{ $lesson->id }}','{{$student->id }}','{{   $surahRecitations->surah_id }}','{{ $surahRecitations->id }}');">
+                                                                                                        onclick="deleteRecitationById(this,'{{ $lesson->id }}','{{ $student->id }}','{{ $surahRecitations->surah_id }}','{{ $surahRecitations->id }}');">
                                                                                                         حذف التسميع
                                                                                                         <i
                                                                                                             class="fa-solid fa-remove"></i>
@@ -236,8 +247,8 @@
                                                                                         </div>
 
                                                                                     </div>
-                                                                                    <p> ملاحظات التسميع :
-                                                                                        {{ $surahRecitations->notes }}
+                                                                                    <p class=" p-2 m-0"> ملاحظات التسميع :
+                                                                                        {{ $surahRecitations->notes ? $surahRecitations->notes : 'لايوجد ملاحظات' }}
                                                                                     </p>
 
                                                                                 </div>
@@ -465,19 +476,87 @@
             });
         }
 
-        function deleteRecitationById(el, lessonId, studentId,surahId ,recitation_id) {
+        function deleteRecitationById(el, lessonId, studentId, surahId, recitation_id) {
             let tr = el.closest("tr");
             if (confirm("سوف يتم حذف هذا التمسيع ولا يمكن التراجع! ")) {
 
                 $.ajax({
                     url: `/ajax/deletRecitationById/${lessonId}/${studentId}/${surahId}/${recitation_id}`,
-                    method: 'DELETE',
+                    method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': $('input[name="_token"]').val()
                     },
                     success: function(response) {
                         if (response.status == 200) {
-                            location.reload();
+                            // location.reload();
+                            if (response.data.length > 0) {
+                                $(`#surah-${recitation_id}`).slideUp()
+                                $(`#percentage-${surahId}`).text((response.data[0].percentage));
+                                $(`#surah-finish-${surahId}`).text(
+                                    `سمع ${response.data[0].total_verses_recited} آية`);
+                                $(`#verses-left-${surahId}`).text(
+                                    `تبقى ${response.data[0].total_verses_in_surah - response.data[0].total_verses_recited} آية`
+                                );
+
+
+                                // Set initial stroke color
+                                let strokeColor = 'var(--bs-primary)';
+                                // Set initial color
+                                let color = 'primary';
+                                var recitationPercenter = response.data[0].percentage;
+                                // Determine color based on percentage
+                                if (recitationPercenter <= 25) {
+                                    color = 'secondary';
+                                } else if (recitationPercenter <= 50) {
+                                    color = 'warning';
+                                } else if (recitationPercenter <= 75) {
+                                    color = 'primary';
+                                } else if (recitationPercenter <= 100) {
+                                    color = 'success';
+                                }
+
+                                // Set initial stroke color
+
+                                // Map color to corresponding CSS variable
+                                if (color === 'secondary') {
+                                    strokeColor = 'var(--bs-secondary)';
+                                } else if (color === 'warning') {
+                                    strokeColor = 'var(--bs-warning)';
+                                } else if (color === 'success') {
+                                    strokeColor = 'var(--bs-success)';
+                                }
+
+
+                                // $(`#circle-${surahId}`).addClass(`bg-${color}`);
+
+                                $(`#circle-${surahId}`).css({
+                                    "stroke": strokeColor,
+                                    "stroke-dasharray": `${(226.2 * response.data[0].percentage) / 100} 226.2`,
+                                    "transition": "stroke-dasharray 0.5s ease-in-out"
+                                });
+
+
+
+
+                                // const color =  ;
+                                // const strokeColor =   ;
+                                // const recitationPercenter =   ;
+
+                                // const circleElement = `<circle
+                            //         id="circle-${surahId}"
+                            //         class="progress-ring__circle bg-${color}"
+                            //         cx="40" 
+                            //         cy="40" 
+                            //         r="36"
+                            //         style="stroke: ${strokeColor}; stroke-dasharray: ${226.2 * (recitationPercenter / 100)} 226.2;"
+                            //     />
+                            // `;
+
+
+
+                            } else {
+                                $(`#main-div-${surahId}`).slideUp();
+                            }
                         }
                     },
                     error: function(xhr, status, error) {
@@ -542,7 +621,7 @@
 
     .card-header {
         padding: 15px;
-        background: linear-gradient(135deg, #007bff, #00b4db);
+        background: linear-gradient(135deg, #024388, #d0e7ec);
         color: white;
         display: flex;
         justify-content: space-between;
