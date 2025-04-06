@@ -33,6 +33,10 @@ class Lesson extends Model
     {
         return $this->hasMany(StudentLessonRecitation::class);
     }
+    function studentAbsent()
+    {
+        return $this->hasMany(StudentAbsent::class, "lesson_id", "id");
+    }
     function arabicDateTranslator($date)
     {
         return  Carbon::parse($date)->locale('ar')->translatedFormat('l d-m ');
@@ -58,5 +62,16 @@ class Lesson extends Model
     {
         $lesson =  self::where("id", $lesson_id)->whereNull("finished_at")->first();
         return $lesson != null ? true : false;
+    }
+    function addStudentAbsent($student_id, $lesson_id, $reason = "")
+    {
+        if (self->isStudentAbsent($student_id, $lesson_id))
+            $student = Student::find(2);
+        $student->studentAbsent()->create(['lesson_id' => 2, "absence_date" => date("Y-m-d"), "reason" => "asdasd"]);
+        $student->save();
+    }
+    static function isStudentAbsent($student_id, $lesson_id)
+    {
+        return StudentAbsent::where("student_id", $student_id)->where("lesson_id", $lesson_id)->first();
     }
 }

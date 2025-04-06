@@ -6,6 +6,8 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\SurahController;
+use App\Models\Lesson;
+use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -44,10 +46,19 @@ Route::prefix('ajax/')->middleware('auth')->group(function () {
     Route::get('getLessonSurahInfo/{surah_id}/{lesson_id}/{student_id}', [LessonController::class, "getLessonSurahInfo"])->middleware("IsStudentInLesson");
     Route::post('saveRecitations/{surah_id}/{lesson_id}/{student_id}', [SurahController::class, "saveRecitations"])->middleware(["IsStudentInLesson"]);
     Route::delete('deletRecitation/{lesson_id}/{student_id}/{surah_id}', [LessonController::class, "deletRecitation"])->middleware(["IsSurahInStudentRecitations"]);
-    Route::get('deletRecitationById/{lesson_id}/{student_id}/{surah_id}/{recitation_id}', [LessonController::class, "deletRecitationById"])->middleware(["IsSurahInStudentRecitations"]);
+    Route::delete('deletRecitationById/{lesson_id}/{student_id}/{surah_id}/{recitation_id}', [LessonController::class, "deletRecitationById"])->middleware(["IsSurahInStudentRecitations"]);
     Route::put('closeLesson/{lesson_id}', [LessonController::class, "closeLesson"])->middleware(["IsShaikhInLesson"]);
+    Route::post('addStudentAbsent/{lesson_id}/{student_id}', [LessonController::class, "addDeleteStudentAbsent"])->middleware(["IsShaikhInLesson"]);
 });
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/test', function () {
+//     return Lesson::isStudentAbsent(2,2) ==null;
+    
+//     $student = Student::find(2);
+//     $student->studentAbsent()->create(['lesson_id' => 2, "absence_date" => date("Y-m-d"), "reason" => "asdasd"]);
+//     $student->save();
+//     return true;
+// });

@@ -1,6 +1,13 @@
 @extends('layouts.admin')
 
 @section('app-main')
+    <style>
+        .disable-item {
+            cursor: not-allowed;
+            opacity: 0.5 !important;
+            text-decoration: none !important;
+        }
+    </style>
     <main class="app-main">
         <!-- App Content Header -->
         <div class="app-content-header">
@@ -69,9 +76,9 @@
                                                         <th style="width: 10px"></th>
                                                         <th>الطالب</th>
                                                         @if ($isRunning)
-                                                            <th  class="hide-on-sm text-center">تسميع</th>
+                                                            <th class="hide-on-sm text-center">تسميع</th>
                                                         @endif
-                                                        <th  class="hide-on-sm text-center"  >سجل تسميع الدرس</th>
+                                                        <th class="hide-on-sm text-center">سجل تسميع الدرس</th>
                                                         <th class="hide-on-sm text-center ">الإحصائيات</th>
                                                         <th class="hide-on-sm text-center ">الحضور</th>
                                                         <th class="hide-on-md text-center ">#</th>
@@ -79,39 +86,76 @@
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($students as $key => $student)
-                                                        <tr class="align-middle">
-                                                            <td>{{ $key + 1 }}</td>
-                                                            <td>
-                                                                <a href="javascript:showData('{{ $student->id }}')">{{ $student->getFullName() }}</a>
+                                                        @set($isAbsent = in_array($student->id, $absences))
+
+                                                        <tr class="align-middle" id='student-{{ $student->id }}'>
+                                                            <td class="{{ $isAbsent ? 'bg-danger' : '' }}">
+                                                                {{ $key + 1 }}
+                                                            </td>
+                                                            <td class="{{ $isAbsent ? 'bg-danger' : '' }}">
+                                                                <a id="student-name"
+                                                                    href="javascript:showData('{{ $student->id }}')">
+                                                                    {{ $student->getFullName() }}
+                                                                    {{-- <span
+                                                                        class="hide-on-md text-center fw-bold   {{ $isAbsent ? '' : 'd-none' }} ">
+                                                                        -   غـــيـــاب
+                                                                    </span> --}}
+                                                                </a>
 
                                                             </td>
+
                                                             @if ($isRunning)
-                                                                <td class="hide-on-sm text-center">
-                                                                    <a class="btn btn-primary btn-sm"
-                                                                        href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
+                                                                <td class="hide-on-sm text-center   absences-show {{ $isAbsent ? 'bg-danger' : ' ' }}"
+                                                                    style="{{ $isAbsent ? 'display:none' : '' }}">
+                                                                    <a
+                                                                        @if (!in_array($student->id, $absences)) href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}"
+                                                                         class="btn btn-primary btn-sm"
+                                                                    @else
+                                                                        class="btn btn-primary btn-sm"
+                                                                         data-href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}" @endif>
                                                                         <i class="fa-solid fa-ear-listen"></i>
                                                                     </a>
                                                                 </td>
                                                             @endif
-                                                            <td class="hide-on-sm text-center"  >
-                                                                <a class="btn btn-secondary btn-sm"
-                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities">
+                                                            <td class="hide-on-sm text-center absences-show {{ $isAbsent ? 'bg-danger' : ' ' }}"
+                                                                style="{{ $isAbsent ? 'display:none' : '' }}">
+                                                                <a
+                                                                    @if (!in_array($student->id, $absences)) href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities"
+                                                                    class="btn btn-secondary btn-sm"
+                                                                @else
+                                                                class="btn btn-secondary btn-sm "
+                                                                     data-href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities" @endif>
+
                                                                     <i class="fa-solid fa-clock-rotate-left"></i>
                                                                 </a>
                                                             </td>
-                                                            <td class="hide-on-sm text-center">
+                                                            <td class="hide-on-sm text-center  absences-show {{ $isAbsent ? 'bg-danger' : ' ' }}"
+                                                                style="{{ $isAbsent ? 'display:none' : '' }}">
                                                                 <a class="btn btn-warning btn-sm"
-                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
+                                                                    @if (!in_array($student->id, $absences)) href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}"
+                                                                @else
+                                                                     data-href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}" @endif>
+
                                                                     <i class="fa-solid fa-chart-simple"></i>
                                                                 </a>
                                                             </td>
-                                                            <td class="hide-on-sm text-center">
-                                                                <a class="btn btn-success btn-sm"
-                                                                    href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
-                                                                    <i class="fa-solid fa-hand"></i>
-                                                                </a>
+
+                                                            <td class="hide-on-sm text-center  absences-text bg-danger fw-bold"
+                                                                style="{{ $isAbsent ? '' : 'display:none' }}"
+                                                                colspan="2">
+                                                                غـــيـــاب
                                                             </td>
-                                                            <td class="hide-on-md text-center">
+
+                                                            <td
+                                                                class="hide-on-sm text-center {{ $isAbsent ? 'bg-danger' : ' ' }} ">
+                                                                <button class="btn btn-success btn-sm" type="button"
+                                                                    onclick="addStudentAbsent(this,'{{ $lesson->id }}','{{ $student->id }}')">
+                                                                    <i class="fa-solid fa-hand"></i>
+                                                                </button>
+                                                            </td>
+
+                                                            <td
+                                                                class="hide-on-md text-center {{ $isAbsent ? 'bg-danger' : ' ' }}">
                                                                 <div class="dropdown">
                                                                     <a class="btn btn-secondary " href="#"
                                                                         role="button" id="dropdownMenuLink"
@@ -120,7 +164,9 @@
                                                                     </a>
                                                                     <div class="dropdown-menu p-0"
                                                                         aria-labelledby="dropdownMenuLink">
-                                                                        <a class="dropdown-item bg-primary text-light btn btn-sm p-2"
+
+                                                                        <a class="dropdown-item bg-primary text-light btn btn-sm p-2 dropdown-menu-options "
+                                                                            style="{{ $isAbsent ? 'display:none' : '' }}"
                                                                             href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
                                                                             <div
                                                                                 class=" d-flex pr-2 pl-3 justify-content-between">
@@ -128,8 +174,9 @@
                                                                                 <i class="fa-solid fa-ear-listen mt-1"></i>
                                                                             </div>
                                                                         </a>
-                                                                        <a class="dropdown-item bg-secondary text-light  btn btn-sm p-2"
-                                                                        href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities">
+                                                                        <a class="dropdown-item bg-info text-light  btn btn-sm p-2  dropdown-menu-options"
+                                                                            style="{{ $isAbsent ? 'display:none' : '' }}"
+                                                                            href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities">
 
                                                                             <div
                                                                                 class=" d-flex pr-2 pl-3 justify-content-between">
@@ -138,7 +185,8 @@
                                                                                     class="fa-solid fa-clock-rotate-left mt-1"></i>
                                                                             </div>
                                                                         </a>
-                                                                        <a class="dropdown-item bg-warning text-light  btn btn-sm p-2"
+                                                                        <a class="dropdown-item bg-warning text-light  btn btn-sm p-2 dropdown-menu-options"
+                                                                            style="{{ $isAbsent ? 'display:none' : '' }}"
                                                                             href="#">
                                                                             <div
                                                                                 class=" d-flex pr-2 pl-3 justify-content-between">
@@ -147,11 +195,14 @@
                                                                                     class="fa-solid fa-chart-simple mt-1"></i>
                                                                             </div>
                                                                         </a>
-                                                                        <a class="dropdown-item bg-success text-light  btn btn-sm p-2"
+                                                                        <a class="dropdown-item  
+                                                                            {{ $isAbsent ? 'bg-success' : 'bg-danger ' }} 
+                                                                        text-light  btn btn-sm p-2"
+                                                                        id="mobile-abcene-div"
                                                                             href="#">
-                                                                            <div
-                                                                                class=" d-flex pr-2 pl-3 justify-content-between">
-                                                                                الحضور
+                                                                            <div class=" d-flex pr-2 pl-3 justify-content-between" id="mobile-abcene-button"
+                                                                                onclick="addStudentAbsent(this,'{{ $lesson->id }}','{{ $student->id }}')">
+                                                                                تسجيل {{ $isAbsent ? 'حضور' : 'غياب ' }}
                                                                                 <i class="fa-solid fa-hand mt-1"></i>
                                                                             </div>
                                                                         </a>
@@ -301,7 +352,107 @@
                     }
                 });
             }
+        }
 
+        function addStudentAbsent(el, lessonId, studentId) {
+            $.ajax({
+                url: `/ajax/addStudentAbsent/${lessonId}/${studentId}`,
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                success: function(response) {
+                    disableRow(el.closest("tr"), studentId, response.status);
+
+                    if (response.status == 200) {
+                        $(".dropdown-menu-options").fadeOut();
+                        $("#mobile-abcene-button").text("تسجيل حضور");
+                        // alert($("#mobile-abcene-button").text())
+                        $("#mobile-abcene-div").addClass("bg-success");
+                        $("#mobile-abcene-div").removeClass("bg-danger");
+                    } else if (response.status == 202) {
+                        $(".dropdown-menu-options").fadeIn();
+                        $("#mobile-abcene-button").text("تسجيل غياب");
+                        $("#mobile-abcene-div").removeClass("bg-success");
+                        $("#mobile-abcene-div").addClass("bg-danger");
+                    }
+
+
+
+                    // alert(response.data)
+                },
+                error: function(response) {
+                    disableRow(el.closest("tr"), studentId, response.status);
+                    // alert(response.responseJSON.data)
+                }
+            });
+        }
+
+        function disableRow(row, studentId, status) {
+            let items = row.querySelectorAll("td");
+            for (let index = 0; index < items.length; index++) {
+                const item = items[index];
+                if (status == 200) {
+                    if (item.classList.contains("absences-show")) {
+                        item.style.display = 'none';
+                    }
+                    if (item.classList.contains("absences-text")) {
+                        item.style.display = '';
+                    }
+                    item.classList.add("bg-danger")
+                    $(".dropdown-menu-options").fadeOut();
+
+                } else if (status == 202) {
+                    if (item.classList.contains("absences-show")) {
+                        item.style.display = '';
+                    }
+                    if (item.classList.contains("absences-text")) {
+                        item.style.display = 'none';
+                    }
+                    item.classList.remove("bg-danger")
+                    $(".dropdown-menu-options").fadeIn();
+
+                }
+            }
+
+
+
+            // if (status == 200)
+            //     disableATag(row);
+            // else
+            //     enableATag(row);
+            // row.querySelector("#student-name").setAttribute();
+            // const elements = row.querySelectorAll('input, button, select, textarea');
+            // // Disable each element
+            // elements.forEach(element => {
+            //     element.disabled = true;
+            // });
+            // "Disable" links
+
+            // $(`#absent-${studentId}`).text("غـــيـــاب");
+        }
+
+        function disableATag(row) {
+            const links = row.querySelectorAll('a');
+            links.forEach(link => {
+                link.dataset.href = link.getAttribute('href'); // Backup original href
+                link.removeAttribute('href');
+                link.style.pointerEvents = 'none';
+                link.style.opacity = '0.5';
+                link.style.textDecoration = 'none';
+            });
+        }
+
+        function enableATag(row) {
+            const links = row.querySelectorAll('a');
+            var url = "";
+            links.forEach(link => {
+                url = link.getAttribute('data-href'); // Backup original href
+                link.setAttribute('href', url);
+                link.style.pointerEvents = ' ';
+                link.style.opacity = '1';
+                link.style.textDecoration = '';
+            });
         }
     </script>
 @endsection

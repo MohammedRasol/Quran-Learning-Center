@@ -482,7 +482,7 @@
 
                 $.ajax({
                     url: `/ajax/deletRecitationById/${lessonId}/${studentId}/${surahId}/${recitation_id}`,
-                    method: 'GET',
+                    method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('input[name="_token"]').val()
                     },
@@ -591,6 +591,7 @@
                 // $(tr).fadeOut();
             }
         }
+
     </script>
 @endsection
 <style>

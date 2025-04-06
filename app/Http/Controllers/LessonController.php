@@ -6,11 +6,13 @@ use App\Models\Classroom;
 use App\Models\Group;
 use App\Models\Lesson;
 use App\Models\Student;
+use App\Models\StudentAbsent;
 use App\Models\StudentLessonRecitation;
 use App\Models\Surah;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class LessonController extends Controller
@@ -67,19 +69,15 @@ class LessonController extends Controller
         $lesson = Lesson::with(['classrooms.group.classroom', 'classrooms.students.recitations' => function ($query) use ($lesson_id) {
             $query->where('lesson_id', $lesson_id);
         }])->whereHas('classrooms')->findOrFail($lesson_id);
+
         $students = $lesson->classrooms->pluck('students')->flatten()->unique('id');
         foreach ($students as $key => &$student) {
             $student->summary = $this->showStudentRecitationSummary($student, $lesson_id);
         }
+
         $isRunning = $lesson->finished_at == null ? true : false;
-        if (!$isRunning) {
-            // Carbon::setLocale('ar_JO');
-            // $lesson->finished_at = Carbon::parse($lesson->finished_at)->diffForHumans();
-            // $lesson->finished_at .= "  بتاريخ ";
-            // $date = Carbon::parse($lesson->finished_at)->locale('ar');
-            // $lesson->finished_at = $date->format('l، j F Y'); // Force Arabic locale
-        }
-        return view("lessonView.lessonData", compact("lesson", "students", "isRunning"));
+        $absences = $lesson->studentAbsent->pluck('student_id')->all();
+        return view("lessonView.lessonData", compact("lesson", "students", "isRunning", "absences"));
     }
     function lessonStudentData($lesson_id, $student_id)
     {
@@ -121,17 +119,17 @@ class LessonController extends Controller
     {
         // Start with the recitations collection
         $recitations = $student->recitations;
-    
+
         // Apply lesson_id filter if provided
         if ($lesson_id !== null) {
             $recitations = $recitations->where("lesson_id", $lesson_id);
         }
-    
+
         // Apply surah_id filter if provided
         if ($surah_id !== null) {
             $recitations = $recitations->where("surah_id", $surah_id);
         }
-    
+
         // Calculate summation of verses per surah
         return $recitations->groupBy("surah")
             ->map(function ($recitationsPerSurah) {
@@ -139,7 +137,7 @@ class LessonController extends Controller
                     return $recitation->to_verse - $recitation->from_verse + 1; // Total verses recited
                 });
                 $averageRate = $recitationsPerSurah->avg('rate');
-    
+
                 return [
                     'surah' => $recitationsPerSurah->first()->surah,
                     'rate' => $averageRate > 0 ? round($averageRate) : 0,
@@ -170,5 +168,19 @@ class LessonController extends Controller
         $lesson->finished_at = date("Y-m-d H:i:s");
         $lesson->save();
         return response()->json(["data" => $lesson->finished_at, "status" => 200], 200);
+    }
+    function addDeleteStudentAbsent($lesson_id, $student_id, $absence_date, $reason = "")
+    {
+        try {
+            if (!StudentAbsent::getStudentAbsent($lesson_id, $student_id)) {
+                StudentAbsent::addStudentAbsent($lesson_id, $student_id, $absence_date, $reason);
+                return response()->json(["data" => "تم تسجيل الغياب", "status" => 200], 200);
+            } else {
+                StudentAbsent::removeStudentAbsent($lesson_id, $student_id);
+                return response()->json(["data" => "تم حذف الغياب", "status" => 202], 202);
+            }
+        } catch (Exception $th) {
+            return response()->json(["data" => "مسجل غياب بالفعل", "status" => 400], 400);
+        }
     }
 }

@@ -17880,6 +17880,11 @@ html.maximized-card {
     display: none;
   }
 }
-.text-align-center{
+
+.text-align-center {
   text-align: center !important;
+}
+
+.absences-hide {
+  display: none;
 }

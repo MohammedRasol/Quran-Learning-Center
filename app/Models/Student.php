@@ -16,6 +16,10 @@ class Student extends Model
     {
         return $this->hasMany(StudentLessonRecitation::class);
     }
+    function absences()
+    {
+        return $this->hasMany(StudentAbsent::class, "student_id", "id");
+    }
     public function getFullName()
     {
         return $this->name . " " . $this->last_name . " " . $this->family_name;

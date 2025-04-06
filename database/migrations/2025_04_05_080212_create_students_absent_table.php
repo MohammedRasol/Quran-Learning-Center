@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('students_absent', function (Blueprint $table) {
-            $table->id();
+            $table->foreignId('student_id')->constrained("students")->cascadeOnDelete();
+            $table->foreignId('lesson_id')->constrained("lessons")->cascadeOnDelete();
+            $table->date('absence_date');
+            $table->string('reason', 255)->nullable();
             $table->timestamps();
+            // Define composite primary key
+            $table->primary(['student_id', 'lesson_id']);
         });
     }
 

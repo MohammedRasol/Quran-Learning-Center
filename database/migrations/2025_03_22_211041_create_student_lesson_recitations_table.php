@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId("student_id")->constrained("students");
             $table->foreignId("lesson_id")->constrained("lessons");
-            $table->integer("surah")->nullable();
+            $table->integer("surah_id")->nullable();
             $table->integer("from_verse")->nullable();
             $table->integer("to_verse")->nullable();
             $table->integer("rate")->nullable();
             $table->text("notes")->nullable();
             $table->timestamp("recitation_date")->nullable();
             $table->timestamps();
+
         });
     }
  
