@@ -47,4 +47,11 @@ class StudentLessonRecitation extends Model
             ->firstOrFail();
         return $recitation != null ? true : false;
     }
+    static function doesStudentHaveNoRecitation($student_id, $lesson_id)
+    {
+        $recitation = self::where("student_id", $student_id)
+            ->where("lesson_id", $lesson_id)
+            ->first();
+        return $recitation != null ? true : false;
+    }
 }

@@ -16,9 +16,9 @@ class IsLessonRunning
             return $next($request);
         else {
             if ($request->ajax()) {
-                return  response()->json(["error" => 1, "message" => "غير مسموح له بالدخول للدرس"], 403);
+                return  response()->json(["error" => 1, "message" => "الحصة منتهية"], 403);
             }
-            return redirect("lesson")->with(["errors" => ["غير مسموح له بالدخول للدرس"]]);
+            return redirect("lesson")->with(["errors" => ["الحصة منتهية"]]);
         }
         return $next($request);
     }

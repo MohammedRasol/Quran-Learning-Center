@@ -8,6 +8,7 @@ use App\Models\Group;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Expectation;
 
 class GroupController extends Controller
 {
@@ -29,26 +30,41 @@ class GroupController extends Controller
     }
     public function store(GroupRequest $request)
     {
-        $group = new Group();
-        $group->name = $request->name;
-        if ($request->exists("user_id")) {
-            $shaikh = User::findOrFail($request->user_id)->classRoom;
-            if (!$shaikh)
+        try {
+            $group = new Group();
+            $group->name = $request->name;
+
+            // Handle user_id assignment
+            if ($request->filled('user_id')) {
+                $shaikh = User::findOrFail($request->user_id); // Changed to findOrFail for better error handling
+                if ($shaikh->classRoom) {
+                    return redirect()
+                        ->back()
+                        ->withErrors(['user_id' => 'الشيخ مرتبط بغرفة صفية!'])
+                        ->withInput();
+                }
                 $group->user_id = $request->user_id;
-            else
-                return redirect()->back()->withErrors(['user_id' => 'الشيخ مرتبط بغرفة صفية !'])->withInput();
-        }
-
-        if ($request->has("image")) {
-            if ($group->image) {
-                Storage::disk('public')->delete($group->image);
             }
-            $group->image = $request->file("image")->store("images", "public");
-        }
-        $group->save();
-        $this->assignClassRooms($request, $group);
 
-        return redirect("group/$group->id")->with("success", "تم إضافة المجموعة بنجاح");
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                // Since this is a new group, no need to check for existing image
+                $group->image = $request->file('image')->store('images', 'public');
+            }
+
+            $group->save();
+            $this->assignClassRooms($request, $group);
+
+            return redirect("group/{$group->id}")
+                ->with('success', 'تم إضافة المجموعة بنجاح');
+        } catch (\Exception $e) {  // Fixed Expectation typo
+            \Log::error('Group creation failed: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'حدث خطأ أثناء إضافة المجموعة'])
+                ->withInput();
+        }
     }
     public function show($id)
     {
@@ -69,30 +85,35 @@ class GroupController extends Controller
     }
     function update(GroupRequest $req, $id)
     {
-        $groupData = Group::findOrFail($id);
-        $groupData->name = $req->name;
+        try {
+            $groupData = Group::findOrFail($id);
+            $groupData->name = $req->name;
 
-        if ($req->exists("user_id")) {
-            $shaikh = User::findOrFail($req->user_id)->classRoom;
-            if (!$shaikh)
-                $groupData->user_id = $req->user_id;
-            else
-                return redirect()->back()->withErrors(['user_id' => 'الشيخ مرتبط بغرفة صفية !'])->withInput();
-        }
-
-
-        $groupData->user_id = $req->user_id ?? null;
-        if ($req->has("image")) {
-            if ($groupData->image) {
-                Storage::disk('public')->delete($groupData->image);
+            if ($req->exists("user_id")) {
+                $shaikh = User::findOrFail($req->user_id)->classRoom;
+                if (!$shaikh)
+                    $groupData->user_id = $req->user_id;
+                else
+                    return redirect()->back()->withErrors(['user_id' => 'الشيخ مرتبط بغرفة صفية !'])->withInput();
             }
-            $imagePath = $req->file("image")->store("images", "public");
-            $groupData->image = $imagePath;
-        }
-        $groupData->save();
-        $this->assignClassRooms($req, $groupData);
 
-        return redirect()->back()->with("success", "تم تحديث البيانات بنجاح !");
+
+            $groupData->user_id = $req->user_id ?? null;
+            if ($req->has("image")) {
+                if ($groupData->image) {
+                    Storage::disk('public')->delete($groupData->image);
+                }
+                $imagePath = $req->file("image")->store("images", "public");
+                $groupData->image = $imagePath;
+            }
+            $groupData->save();
+            $this->assignClassRooms($req, $groupData);
+
+            return redirect()->back()->with("success", "تم تحديث البيانات بنجاح !");
+        } catch (Expectation $th) {
+
+            return redirect()->back()->with("success", $th->getExceptionMessage());
+        }
     }
     public function assignClassRooms(Request $request, $group)
     {

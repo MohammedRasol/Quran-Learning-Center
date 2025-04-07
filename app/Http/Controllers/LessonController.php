@@ -70,7 +70,7 @@ class LessonController extends Controller
             $query->where('lesson_id', $lesson_id);
         }])->whereHas('classrooms')->findOrFail($lesson_id);
 
-        $students = $lesson->classrooms->pluck('students')->flatten()->unique('id');
+        $students = $lesson->classrooms->pluck('students')->flatten()->unique('id')->sortBy('name');;
         foreach ($students as $key => &$student) {
             $student->summary = $this->showStudentRecitationSummary($student, $lesson_id);
         }
@@ -182,5 +182,13 @@ class LessonController extends Controller
         } catch (Exception $th) {
             return response()->json(["data" => "مسجل غياب بالفعل", "status" => 400], 400);
         }
+    }
+    function lessonStatistics($lesson_id)
+    {
+        $lessonData = Lesson::with(["studentAbsent", "recitations", "classRooms" => function ($query) {
+            $query->withCount('students');
+        }])->where("id", $lesson_id)->first();
+        $lessonData->totalStudents = $lessonData->classRooms->sum('students_count');
+        return view("lessonView.lessonStatistics", compact("lessonData"));
     }
 }

@@ -79,7 +79,7 @@
                                                             <th class="hide-on-sm text-center">تسميع</th>
                                                         @endif
                                                         <th class="hide-on-sm text-center">سجل تسميع الدرس</th>
-                                                        <th class="hide-on-sm text-center ">الإحصائيات</th>
+                                                        {{-- <th class="hide-on-sm text-center ">الإحصائيات</th> --}}
                                                         <th class="hide-on-sm text-center ">الحضور</th>
                                                         <th class="hide-on-md text-center ">#</th>
                                                     </tr>
@@ -129,7 +129,7 @@
                                                                     <i class="fa-solid fa-clock-rotate-left"></i>
                                                                 </a>
                                                             </td>
-                                                            <td class="hide-on-sm text-center  absences-show {{ $isAbsent ? 'bg-danger' : ' ' }}"
+                                                            {{-- <td class="hide-on-sm text-center  absences-show {{ $isAbsent ? 'bg-danger' : ' ' }}"
                                                                 style="{{ $isAbsent ? 'display:none' : '' }}">
                                                                 <a class="btn btn-warning btn-sm"
                                                                     @if (!in_array($student->id, $absences)) href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}"
@@ -138,7 +138,7 @@
 
                                                                     <i class="fa-solid fa-chart-simple"></i>
                                                                 </a>
-                                                            </td>
+                                                            </td> --}}
 
                                                             <td class="hide-on-sm text-center  absences-text bg-danger fw-bold"
                                                                 style="{{ $isAbsent ? '' : 'display:none' }}"
@@ -164,16 +164,19 @@
                                                                     </a>
                                                                     <div class="dropdown-menu p-0"
                                                                         aria-labelledby="dropdownMenuLink">
+                                                                        @if ($isRunning)
+                                                                            <a class="dropdown-item bg-primary text-light btn btn-sm p-2 dropdown-menu-options "
+                                                                                style="{{ $isAbsent ? 'display:none' : '' }}"
+                                                                                href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
+                                                                                <div
+                                                                                    class=" d-flex pr-2 pl-3 justify-content-between">
+                                                                                    تسميع
+                                                                                    <i
+                                                                                        class="fa-solid fa-ear-listen mt-1"></i>
+                                                                                </div>
+                                                                            </a>
+                                                                        @endif
 
-                                                                        <a class="dropdown-item bg-primary text-light btn btn-sm p-2 dropdown-menu-options "
-                                                                            style="{{ $isAbsent ? 'display:none' : '' }}"
-                                                                            href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}">
-                                                                            <div
-                                                                                class=" d-flex pr-2 pl-3 justify-content-between">
-                                                                                تسميع
-                                                                                <i class="fa-solid fa-ear-listen mt-1"></i>
-                                                                            </div>
-                                                                        </a>
                                                                         <a class="dropdown-item bg-info text-light  btn btn-sm p-2  dropdown-menu-options"
                                                                             style="{{ $isAbsent ? 'display:none' : '' }}"
                                                                             href="/lesson/{{ $lesson->id }}/student/{{ $student->id }}/activities">
@@ -185,22 +188,13 @@
                                                                                     class="fa-solid fa-clock-rotate-left mt-1"></i>
                                                                             </div>
                                                                         </a>
-                                                                        <a class="dropdown-item bg-warning text-light  btn btn-sm p-2 dropdown-menu-options"
-                                                                            style="{{ $isAbsent ? 'display:none' : '' }}"
-                                                                            href="#">
-                                                                            <div
-                                                                                class=" d-flex pr-2 pl-3 justify-content-between">
-                                                                                الإحصائيات
-                                                                                <i
-                                                                                    class="fa-solid fa-chart-simple mt-1"></i>
-                                                                            </div>
-                                                                        </a>
+
                                                                         <a class="dropdown-item  
                                                                             {{ $isAbsent ? 'bg-success' : 'bg-danger ' }} 
                                                                         text-light  btn btn-sm p-2"
-                                                                        id="mobile-abcene-div"
-                                                                            href="#">
-                                                                            <div class=" d-flex pr-2 pl-3 justify-content-between" id="mobile-abcene-button"
+                                                                            id="mobile-abcene-div" href="#">
+                                                                            <div class=" d-flex pr-2 pl-3 justify-content-between"
+                                                                                id="mobile-abcene-button"
                                                                                 onclick="addStudentAbsent(this,'{{ $lesson->id }}','{{ $student->id }}')">
                                                                                 تسجيل {{ $isAbsent ? 'حضور' : 'غياب ' }}
                                                                                 <i class="fa-solid fa-hand mt-1"></i>
@@ -212,16 +206,15 @@
                                                         </tr>
                                                         <tr class="student-data" id='student_{{ $student->id }}'
                                                             style="display: none;">
-                                                            <td colspan="4">
-
+                                                            <td colspan="12">
                                                                 <table class="table table-striped ">
                                                                     @if (count($student->summary) != 0)
                                                                         <thead>
                                                                             <tr>
-
                                                                                 <th>السورة</th>
                                                                                 <th>الانجاز</th>
-                                                                                <th style="width: 40px">النسبة</th>
+                                                                                <th style="width: 40px" colspan="2">
+                                                                                    النسبة</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -279,8 +272,16 @@
                                     </div>
                                 </div>
                                 <!-- Card Footer -->
-                                <div class="card-footer ">
+                                <div class="card-footer col-12 d-sm-flex justify-content-evenly">
                                     <div class=" col-md-4 col-sm-12 ">
+                                        <a  href="/lesson/{{ $lesson->id }}/statistics/"                                        
+                                        class="btn btn-primary w-100 fw-bold" type="button">الإحصائيات 
+                                            
+                                            <i class="fa-solid fa-chart-simple"></i> 
+                                        </a>
+                                    </div>
+
+                                    <div class=" col-md-4 col-sm-12 mt-1 mt-sm-0">
                                         @if ($isRunning)
                                             <button class="btn btn-danger w-100" type="button"
                                                 onclick="closeLesson({{ $lesson->id }})">إغلاق الغرفة الصفية</button>
@@ -289,15 +290,15 @@
                                                 <div class="alert alert-danger text-center"> الغرفة مغلقة
                                                     {{ Carbon\Carbon::parse($lesson->finished_at)->locale('ar')->diffForHumans() }}
                                                     <br>
-                                                    بتاريخ
                                                     {{ getArabicDate($lesson->finished_at) }}
                                                     <br>
                                                     الساعة
                                                     {{ date('H:i:s', strtotime($lesson->finished_at)) }}
 
                                             </strong>
+                                        @endif
                                     </div>
-                                    @endif
+
                                 </div>
                         </div>
                         </form>
@@ -382,8 +383,10 @@
                     // alert(response.data)
                 },
                 error: function(response) {
+                    console.log(response);
                     disableRow(el.closest("tr"), studentId, response.status);
-                    // alert(response.responseJSON.data)
+                    if (response.status == 403)
+                        alert(response.responseJSON.message)
                 }
             });
         }

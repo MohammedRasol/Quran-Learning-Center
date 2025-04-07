@@ -3,6 +3,7 @@
 use App\Http\Middleware\IsLessonNotFinishedYet;
 use App\Http\Middleware\IsLessonRunning;
 use App\Http\Middleware\IsShaikhInLesson;
+use App\Http\Middleware\doesStudentHaveNoRecitation;
 use App\Http\Middleware\IsStudentHaveRecitation;
 use App\Http\Middleware\IsStudentInLesson;
 use App\Http\Middleware\IsSurahInStudentRecitations;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             "IsSurahInStudentRecitations" => IsSurahInStudentRecitations::class,
             "IsStudentHaveRecitation" => IsStudentHaveRecitation::class,
             "IsShaikhInLesson" => IsShaikhInLesson::class,
+            "doesStudentHaveNoRecitation" => doesStudentHaveNoRecitation::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
