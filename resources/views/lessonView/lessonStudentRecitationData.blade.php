@@ -332,9 +332,6 @@
             let lastVerse = $("#to_verse").val();
             let notes = $("#notes").val();
             let rating = $("#ratingValue").text();
-
-
-
             $.ajax({
                 url: `/ajax/saveRecitations/${surahId}/${lessonId}/${studentId}`,
                 method: 'POST',

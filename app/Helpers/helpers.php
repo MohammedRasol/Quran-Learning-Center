@@ -62,3 +62,19 @@ function getBootStrapRandoomColors($withLight = true, $withDark = true)
     $randomColor = collect($bootstrapColors)->random();
     return  $randomColor;
 }
+
+function getRecitationColor($recitationPercenter)
+{
+    $color = 'primary';
+    if ($recitationPercenter <= 25) {
+        $color = 'danger';
+    } elseif ($recitationPercenter <= 50) {
+        $color = 'warning';
+    } elseif ($recitationPercenter <= 75) {
+        $color = 'primary';
+    } elseif ($recitationPercenter <= 100) {
+        $color = 'success';
+    }
+
+    return $color;
+}

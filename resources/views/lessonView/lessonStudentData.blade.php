@@ -277,6 +277,14 @@
         var range = [];
         // ${studentId}/lesson/${lessonId}/recitations
         function getSurahData(surah, studentId, lessonId) {
+
+            if (surah.value == "") {
+                alert("يرجى إختيار سورة")
+                $(surah).addClass("is-invalid");
+                return;
+            }
+            $(".is-invalid").removeClass("is-invalid");
+
             $.ajax({
                 url: `/ajax/getLessonSurahInfo/${surah.value}/${lessonId}/${studentId}`,
                 method: 'GET',
@@ -317,7 +325,7 @@
 
 
                         range = Array.from(allNumbers).sort((a, b) => a - b);
-                        if (findMissingNumbers(range,1,total_verses).length==0) {
+                        if (findMissingNumbers(range, 1, total_verses).length == 0) {
                             msg = "تم تسميع السورة بالكامل ";
                             completed = true;
                         }
@@ -357,11 +365,12 @@
         }
 
         function verseChange(el) {
+
             if (el.value == '') {
                 alert()
                 return;
             }
-     
+            $(".is-invalid").removeClass("is-invalid");
 
             const firstOption = parseInt(el.value);
             const lastOption = parseInt(el.querySelector('select option:last-child').value);
@@ -398,6 +407,40 @@
             let lastVerse = $("#to_verse").val();
             let notes = $("#notes").val();
             let rating = $("#ratingValue").text();
+            let isValid = true;
+            let errors = [];
+
+            // 1. التحقق من رقم السورة
+            if (!surahId || isNaN(surahId) || parseInt(surahId) <= 0) {
+                errors.push("يرجى اختيار سورة صحيحة.");
+                $("#surah_id").addClass("is-invalid");
+            } else {
+                $("#surah_id").removeClass("is-invalid");
+            }
+
+            // 2. التحقق من الآية الأولى
+            if (!firstVerse || isNaN(firstVerse) || parseInt(firstVerse) <= 0) {
+                errors.push("يجب اختيار من الآية .");
+                $("#from_verse").addClass("is-invalid");
+            } else {
+                $("#from_verse").removeClass("is-invalid");
+            }
+
+            // 3. التحقق من الآية الأخيرة
+            if (!lastVerse || isNaN(lastVerse) || parseInt(lastVerse) <= 0) {
+                errors.push("يجب اختيار إلى الآية .");
+                $("#to_verse").addClass("is-invalid");
+            } else if (parseInt(lastVerse) < parseInt(firstVerse)) {
+                errors.push("يجب أن تكون من الآية أكبر من أو تساوي الى الآية .");
+                $("#to_verse").addClass("is-invalid");
+            } else {
+                $("#to_verse").removeClass("is-invalid");
+            }
+            if (errors.length != 0) {
+                alert(errors.join("\n"))
+                return false;
+            }
+
             $.ajax({
                 url: `/ajax/saveRecitations/${surahId}/${lessonId}/${studentId}`,
                 method: 'POST',
@@ -434,7 +477,8 @@
                     },
                     success: function(response) {
                         if (response.status == 200) {
-                            location.reload();
+                            $(el.closest("tr")).fadeOut();
+                            $("#surah_id").val("");
                         }
                     },
                     error: function(xhr, status, error) {
@@ -446,17 +490,15 @@
             }
         }
 
-        function findMissingNumbers(arr,min,max) {
+        function findMissingNumbers(arr, min, max) {
             const set = new Set(arr);
             const missing = [];
-             for (let i = 1; i <= max; i++) {
+            for (let i = 1; i <= max; i++) {
                 if (!set.has(i)) {
                     missing.push(i);
                 }
             }
             return missing;
         }
-
-    
     </script>
 @endsection

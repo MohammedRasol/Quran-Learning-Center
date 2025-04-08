@@ -86,6 +86,7 @@
                                                         @elseif($recitationPercenter <= 100)
                                                             @set($color = 'success')
                                                         @endif
+                                                        
                                                         @set($strokeColor = 'var(--bs-primary)')
                                                         @if ($color == 'secondary')
                                                             @set($strokeColor = 'var(--bs-secondary)')

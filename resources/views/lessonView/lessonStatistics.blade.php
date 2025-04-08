@@ -1,5 +1,13 @@
 @extends('layouts.admin')
 @section('app-main')
+    <style>
+        @media (max-width: 576px) {
+            .sm-collapsed-card {
+                display: none;
+                /* Collapsed on small screens */
+            }
+        }
+    </style>
     <main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
@@ -23,31 +31,46 @@
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-3">
                         <div class="info-box">
-                            <span class="info-box-icon text-bg-primary shadow-sm">
+
+                            <span
+                                class="info-box-icon text-bg-{{ getRecitationColor((count($lessonData->recitations) / $lessonData->totalStudents) * 100) }} shadow-sm">
                                 <i class="bi bi-mic-fill"></i>
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text fw-bold" style="font-size: 1.5rem;">عدد المسمعين</span>
-                                <span
-                                    class="info-box-number">{{ count($lessonData->recitations) ."/". $lessonData->totalStudents ." النسبة ". count($lessonData->recitations)/$lessonData->totalStudents *100 . "%"}}</span>
+                                <div class="d-flex justify-content-between w-50">
+
+                                    <span
+                                        class="info-box-number">{{ count($lessonData->totalRecitations) . ' من أصل ' . $lessonData->totalStudents }}</span>
+                                    <span
+                                        class="info-box-number">{{ (count($lessonData->totalRecitations) / $lessonData->totalStudents) * 100 . '%' }}</span>
+                                </div>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
                         <!-- /.info-box -->
                     </div>
-                    <!-- /.col -->
 
-                    <!-- /.col -->
-                    <!-- fix for small devices only -->
                     <!-- <div class="clearfix hidden-md-up"></div> -->
                     <div class="col-12 col-sm-6 col-md-3">
                         <div class="info-box">
-                            <span class="info-box-icon text-bg-success shadow-sm">
+
+
+
+                            <span
+                                class="info-box-icon text-bg-{{ getRecitationColor($lessonData->avarageRate * 20) }} shadow-sm">
                                 <i class="bi bi-cart-fill"></i>
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text fw-bold" style="font-size: 1.5rem;">تقييم أداء التسميع</span>
-                                <span class="info-box-number">41,410</span>
+                                <span class="info-box-number">
+                                    @for ($i = 1; $i <= $lessonData->avarageRate; $i++)
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    @endfor
+                                    @for ($i = $lessonData->avarageRate; $i < 5; $i++)
+                                        <i class="bi bi-star"></i>
+                                    @endfor
+                                </span>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
@@ -69,12 +92,14 @@
                     </div> --}}
                     <div class="col-12 col-sm-6 col-md-3">
                         <div class="info-box">
-                            <span class="info-box-icon text-bg-danger shadow-sm">
+                            <span
+                                class="info-box-icon text-bg-{{ getRecitationColor((($lessonData->totalStudents - $lessonData->totalStudentAbsent) / $lessonData->totalStudents) * 100) }} shadow-sm">
                                 <i class="bi bi-person-fill-x"></i>
                             </span>
                             <div class="info-box-content">
                                 <span class="info-box-text fw-bold" style="font-size: 1.5rem;">الغياب عن الحصة</span>
-                                <span class="info-box-number">41,410</span>
+                                <span
+                                    class="info-box-number">{{ $lessonData->totalStudentAbsent . 'من أصل ' . $lessonData->totalStudents }}</span>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
@@ -94,21 +119,21 @@
 
                         <!--end::Row-->
                         <!--begin::Latest Order Widget-->
-                        <div class="card" style="height: 100%;">
+                        <div class="card " style="height: 100%;">
                             <div class="card-header">
                                 <h3 class="card-title">اداء الطلاب</h3>
                                 <div class="card-tools">
+                        
                                     <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                          
                                     </button>
-                                    <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
-                                        <i class="bi bi-x-lg"></i>
+                                    <button type="button" class="btn btn-tool"  onclick="toggleCard(this)">
+                                        <i class="bi bi-arrows-angle-expand"></i>
                                     </button>
                                 </div>
                             </div>
                             <!-- /.card-header -->
-                            <div class="card-body p-0">
+                            <div class="card-body p-0 sm-collapsed-card">
                                 <div class="table-responsive">
                                     <table class="table m-0">
                                         <thead>
@@ -213,12 +238,13 @@
                             <div class="card-header">
                                 <h3 class="card-title">رسم بياني لأداء الطلاب</h3>
                                 <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                       
+                                    <button type="button" class="btn btn-tool"  >
+                                 
                                     </button>
-                                    <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
-                                        <i class="bi bi-x-lg"></i>
+                                    <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                        <i class="bi bi-arrows-angle-expand"></i>
+                                     
                                     </button>
                                 </div>
                             </div>
@@ -250,20 +276,49 @@
 @endsection
 
 <script>
+    function toggleCard(header) {
+     $(".sm-collapsed-card").slideToggle();
+    }
+
+    const totalRecitationsForEachStudent = JSON.parse(@json($lessonData->totalRecitationsForEachStudent));
+    // المصفوفة الأولى: أسماء الطلاب وأرقامهم
+    const studentsArray = totalRecitationsForEachStudent.map(student => student.student_name);
+    // المصفوفة الثانية: عدد الآيات
+    const versesArray = totalRecitationsForEachStudent.map(student => student.total_verses);
+
     const pie_chart_options = {
-        series: [700, 500, 400, 600, 300, 100],
+        series: versesArray,
         chart: {
-            type: 'donut',
+            type: 'pie',
         },
-        labels: ['Chrome', 'Edge', 'FireFox', 'Safari', 'Opera', 'IE'],
+        labels: studentsArray,
         dataLabels: {
-            enabled: false,
+            enabled: true,
+            formatter: function(val, opts) {
+                return opts.w.config.series[opts.seriesIndex] + " آية "; // Returns raw value
+            }
         },
-        colors: ['#0d6efd', '#20c997', '#ffc107', '#d63384', '#6f42c1', '#adb5bd'],
+        legend: {
+            fontSize: '20px' // Adjust this value to change the legend text font size
+        },
+        colors: generateColorArray(versesArray.length),
     };
 
     addEventListener("DOMContentLoaded", (event) => {
         const pie_chart = new ApexCharts(document.querySelector('#pie-chart'), pie_chart_options);
         pie_chart.render();
     });
+
+    function generateColorArray(length) {
+        // Array to store the colors
+        const colors = [];
+
+        // Generate 'length' number of random hex colors
+        for (let i = 0; i < length; i++) {
+            const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            colors.push(randomColor);
+        }
+
+        return colors;
+    }
 </script>

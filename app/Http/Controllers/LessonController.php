@@ -11,7 +11,6 @@ use App\Models\StudentLessonRecitation;
 use App\Models\Surah;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -151,7 +150,7 @@ class LessonController extends Controller
     function deletRecitation($lesson_id, $student_id, $surah_id)
     {
         $recitations = StudentLessonRecitation::where("lesson_id", $lesson_id)->where("surah_id", $surah_id)->where("student_id", $student_id)->delete();
-        return $recitations;
+        return response()->json(["data" => $recitations == true ? "تم حذف تسميع السورة" : "فشل الحذف", "status" => $recitations == true ? 200 : 400]);
     }
     function deletRecitationById($lesson_id, $student_id, $surah_id, $recitation_id)
     {
@@ -189,6 +188,28 @@ class LessonController extends Controller
             $query->withCount('students');
         }])->where("id", $lesson_id)->first();
         $lessonData->totalStudents = $lessonData->classRooms->sum('students_count');
+        $lessonData->avarageRate = $lessonData->recitations->avg('rate');
+        $lessonData->totalRecitations = $lessonData->recitations->groupBy('student_id');
+        $lessonData->totalStudentAbsent = $lessonData->studentAbsent->count('student_absent'); // Use snake_case
+        $lessonData->totalRecitationsForEachStudent = $lessonData->recitations
+            ->groupBy('student_id')
+            ->map(function ($recitations, $studentId) {
+                $studentName = $recitations->first()->student->name." ".$recitations->first()->student->last_name ?? 'غير معروف';
+                $totalVerses = $recitations->sum(function ($recitation) {
+                    return ($recitation->to_verse - $recitation->from_verse + 1);
+                });
+                return [
+                    'student_id' => $studentId,
+                    'student_name' => $studentName,
+                    'total_verses' => $totalVerses
+                ];
+            })
+            ->values();
+      
+
+        $lessonData->totalRecitationsForEachStudent = json_encode($lessonData->totalRecitationsForEachStudent->toArray());
+        $lessonData->students = $lessonData->classrooms->pluck('students')->flatten()->unique('id');
+
         return view("lessonView.lessonStatistics", compact("lessonData"));
     }
 }
