@@ -27,7 +27,7 @@ class Lesson extends Model
     }
     public function students()
     {
-        return $this->belongsToMany(Classroom::class, "students_lessons", "lesson_id", "student_id");
+        return $this->belongsToMany(Student::class, "students_lessons", "lesson_id", "student_id");
     }
     public function recitations()
     {

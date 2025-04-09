@@ -187,27 +187,33 @@ class LessonController extends Controller
         $lessonData = Lesson::with(["studentAbsent", "recitations", "classRooms" => function ($query) {
             $query->withCount('students');
         }])->where("id", $lesson_id)->first();
+
+
         $lessonData->totalStudents = $lessonData->classRooms->sum('students_count');
         $lessonData->avarageRate = $lessonData->recitations->avg('rate');
         $lessonData->totalRecitations = $lessonData->recitations->groupBy('student_id');
         $lessonData->totalStudentAbsent = $lessonData->studentAbsent->count('student_absent'); // Use snake_case
-        $lessonData->totalRecitationsForEachStudent = $lessonData->recitations
+
+        $lessonData->summaryRecitationsForEachStudent = $lessonData->recitations
             ->groupBy('student_id')
             ->map(function ($recitations, $studentId) {
-                $studentName = $recitations->first()->student->name." ".$recitations->first()->student->last_name ?? 'غير معروف';
+                $studentName = $recitations->first()->student->name . " " . $recitations->first()->student->last_name ?? 'غير معروف';
                 $totalVerses = $recitations->sum(function ($recitation) {
                     return ($recitation->to_verse - $recitation->from_verse + 1);
                 });
+
+                $averageRate = $recitations->avg("rate");
                 return [
                     'student_id' => $studentId,
                     'student_name' => $studentName,
-                    'total_verses' => $totalVerses
+                    'total_verses' => $totalVerses,
+                    "averageRate" => $averageRate
                 ];
             })
+            ->values()
+            ->sortBy('student_name')
             ->values();
-      
-
-        $lessonData->totalRecitationsForEachStudent = json_encode($lessonData->totalRecitationsForEachStudent->toArray());
+        $lessonData->summaryRecitationsForEachStudentJson = json_encode($lessonData->summaryRecitationsForEachStudent->toArray());
         $lessonData->students = $lessonData->classrooms->pluck('students')->flatten()->unique('id');
 
         return view("lessonView.lessonStatistics", compact("lessonData"));

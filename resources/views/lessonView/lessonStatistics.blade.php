@@ -123,105 +123,47 @@
                             <div class="card-header">
                                 <h3 class="card-title">اداء الطلاب</h3>
                                 <div class="card-tools">
-                        
+
                                     <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                          
+
                                     </button>
-                                    <button type="button" class="btn btn-tool"  onclick="toggleCard(this)">
+                                    <button type="button" class="btn btn-tool" onclick="toggleCard(this)">
                                         <i class="bi bi-arrows-angle-expand"></i>
                                     </button>
                                 </div>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body p-0 sm-collapsed-card">
-                                <div class="table-responsive">
+                                <div class="table-responsive" style="max-height: 400px">
                                     <table class="table m-0">
                                         <thead>
-                                            <tr>
-                                                <th>Order ID</th>
-                                                <th>Item</th>
-                                                <th>Status</th>
-                                                <th>Popularity</th>
+                                            <tr class="sticky">
+                                                <th>الطالب</th>
+                                                <th>ملاحظات الدرس</th>
+                                                <th>التقييم</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR9842</a>
-                                                </td>
-                                                <td>Call of Duty IV</td>
-                                                <td><span class="badge text-bg-success"> Shipped </span></td>
-                                                <td>
-                                                    <div id="table-sparkline-1"></div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR1848</a>
-                                                </td>
-                                                <td>Samsung Smart TV</td>
-                                                <td><span class="badge text-bg-warning">Pending</span></td>
-                                                <td>
-                                                    <div id="table-sparkline-2"></div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR7429</a>
-                                                </td>
-                                                <td>iPhone 6 Plus</td>
-                                                <td><span class="badge text-bg-danger"> Delivered </span></td>
-                                                <td>
-                                                    <div id="table-sparkline-3"></div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR7429</a>
-                                                </td>
-                                                <td>Samsung Smart TV</td>
-                                                <td><span class="badge text-bg-info">Processing</span></td>
-                                                <td>
-                                                    <div id="table-sparkline-4"></div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR1848</a>
-                                                </td>
-                                                <td>Samsung Smart TV</td>
-                                                <td><span class="badge text-bg-warning">Pending</span></td>
-                                                <td>
-                                                    <div id="table-sparkline-5"></div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR7429</a>
-                                                </td>
-                                                <td>iPhone 6 Plus</td>
-                                                <td><span class="badge text-bg-danger"> Delivered </span></td>
-                                                <td>
-                                                    <div id="table-sparkline-6"></div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="pages/examples/invoice.html"
-                                                        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">OR9842</a>
-                                                </td>
-                                                <td>Call of Duty IV</td>
-                                                <td><span class="badge text-bg-success">Shipped</span></td>
-                                                <td>
-                                                    <div id="table-sparkline-7"></div>
-                                                </td>
-                                            </tr>
+                                            @foreach ($lessonData->summaryRecitationsForEachStudent as $summaryRecitationsStudent)
+                                                <tr>
+                                                    <td>
+                                                        <a href="pages/examples/invoice.html"
+                                                            class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                                            {{ $summaryRecitationsStudent['student_name'] }}
+                                                        </a>
+                                                    </td>
+                                                    <td>Call of Duty IV</td>
+                                                    <td><span class="badge ">
+                                                            @for ($i = 1; $i <= $summaryRecitationsStudent['averageRate']; $i++)
+                                                                <i class="bi bi-star-fill text-warning"></i>
+                                                            @endfor
+                                                            @for ($i = $summaryRecitationsStudent['averageRate']; $i < 5; $i++)
+                                                                <i class="bi bi-star text-warning"></i>
+                                                            @endfor
+                                                        </span></td>
+                                                </tr>
+                                            @endforeach
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -238,13 +180,13 @@
                             <div class="card-header">
                                 <h3 class="card-title">رسم بياني لأداء الطلاب</h3>
                                 <div class="card-tools">
-                       
-                                    <button type="button" class="btn btn-tool"  >
-                                 
+
+                                    <button type="button" class="btn btn-tool">
+
                                     </button>
                                     <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
                                         <i class="bi bi-arrows-angle-expand"></i>
-                                     
+
                                     </button>
                                 </div>
                             </div>
@@ -277,14 +219,14 @@
 
 <script>
     function toggleCard(header) {
-     $(".sm-collapsed-card").slideToggle();
+        $(".sm-collapsed-card").slideToggle();
     }
 
-    const totalRecitationsForEachStudent = JSON.parse(@json($lessonData->totalRecitationsForEachStudent));
+    const summaryRecitationsForEachStudent = JSON.parse(@json($lessonData->summaryRecitationsForEachStudentJson));
     // المصفوفة الأولى: أسماء الطلاب وأرقامهم
-    const studentsArray = totalRecitationsForEachStudent.map(student => student.student_name);
+    const studentsArray = summaryRecitationsForEachStudent.map(student => student.student_name);
     // المصفوفة الثانية: عدد الآيات
-    const versesArray = totalRecitationsForEachStudent.map(student => student.total_verses);
+    const versesArray = summaryRecitationsForEachStudent.map(student => student.total_verses);
 
     const pie_chart_options = {
         series: versesArray,

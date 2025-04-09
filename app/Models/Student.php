@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use PHPUnit\Framework\MockObject\Builder\Stub;
 
 class Student extends Model
 {
@@ -23,5 +24,9 @@ class Student extends Model
     public function getFullName()
     {
         return $this->name . " " . $this->last_name . " " . $this->family_name;
+    }
+    public function students()
+    {
+        return $this->hasMany(Student::class, "students_lessons", "student_id", "id");
     }
 }
