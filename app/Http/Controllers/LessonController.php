@@ -218,4 +218,22 @@ class LessonController extends Controller
 
         return view("lessonView.lessonStatistics", compact("lessonData"));
     }
+    function getLessonRecitationsNotes($lesson_id, $student_id)
+    {
+        $recitation = StudentLessonRecitation::select([
+            'student_lesson_recitations.from_verse',
+            'student_lesson_recitations.to_verse',
+            'student_lesson_recitations.rate',
+            'student_lesson_recitations.notes',
+            'student_lesson_recitations.created_at',
+            'surahs.id as surah_id',
+            'surahs.name as surah_name'
+        ])
+            ->join('surahs', 'student_lesson_recitations.surah_id', '=', 'surahs.id')
+            ->where('student_lesson_recitations.lesson_id', $lesson_id)
+            ->where('student_lesson_recitations.student_id', $student_id)
+            ->with('surah')
+            ->get();
+        return response()->json(["data" => $recitation, "status" => 200], 200);
+    }
 }

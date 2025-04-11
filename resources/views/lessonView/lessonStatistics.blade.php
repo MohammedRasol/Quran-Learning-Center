@@ -31,9 +31,8 @@
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-3">
                         <div class="info-box">
-
                             <span
-                                class="info-box-icon text-bg-{{ getRecitationColor((count($lessonData->recitations) / $lessonData->totalStudents) * 100) }} shadow-sm">
+                                class="info-box-icon text-bg-{{ getRecitationColor((count($lessonData->totalRecitations) / $lessonData->totalStudents) * 100) }} shadow-sm">
                                 <i class="bi bi-mic-fill"></i>
                             </span>
                             <div class="info-box-content">
@@ -120,14 +119,14 @@
                         <!--end::Row-->
                         <!--begin::Latest Order Widget-->
                         <div class="card " style="height: 100%;">
-                            <div class="card-header">
+                            <div class="card-header" onclick="toggleCard(this)">
                                 <h3 class="card-title">اداء الطلاب</h3>
                                 <div class="card-tools">
 
                                     <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
 
                                     </button>
-                                    <button type="button" class="btn btn-tool" onclick="toggleCard(this)">
+                                    <button type="button" class="btn btn-tool">
                                         <i class="bi bi-arrows-angle-expand"></i>
                                     </button>
                                 </div>
@@ -138,21 +137,23 @@
                                     <table class="table m-0">
                                         <thead>
                                             <tr class="sticky">
-                                                <th>الطالب</th>
-                                                <th>ملاحظات الدرس</th>
-                                                <th>التقييم</th>
+                                                <th style="width:150px;">الطالب</th>
+                                                <th style="width:70px; ;">الملاحظات</th>
+                                                <th style="width:50px; ;">التقييم</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($lessonData->summaryRecitationsForEachStudent as $summaryRecitationsStudent)
                                                 <tr>
                                                     <td>
-                                                        <a href="pages/examples/invoice.html"
+                                                        <a href="/student/{{ $summaryRecitationsStudent['student_id'] }}/profile"
                                                             class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                                                             {{ $summaryRecitationsStudent['student_name'] }}
                                                         </a>
                                                     </td>
-                                                    <td>Call of Duty IV</td>
+                                                    <td><a href="javascript:void(0);"
+                                                            onclick="showNotesModal('{{ $summaryRecitationsStudent['student_id'] }}','{{ $lessonData->id }}','{{ $summaryRecitationsStudent['student_name'] }}')">الملاحظات</a>
+                                                    </td>
                                                     <td><span class="badge ">
                                                             @for ($i = 1; $i <= $summaryRecitationsStudent['averageRate']; $i++)
                                                                 <i class="bi bi-star-fill text-warning"></i>
@@ -170,14 +171,13 @@
                                 <!-- /.table-responsive -->
                             </div>
                             <!-- /.card-body -->
-
                             <!-- /.card-footer -->
                         </div>
                         <!-- /.card -->
                     </div>
                     <div class="col-md-4">
                         <div class="card" style="height: 100%;">
-                            <div class="card-header">
+                            <div class="card-header" data-lte-toggle="card-collapse">
                                 <h3 class="card-title">رسم بياني لأداء الطلاب</h3>
                                 <div class="card-tools">
 
@@ -215,6 +215,7 @@
         </div>
         <!--end::App Content-->
     </main>
+    @extends('lessonView.showLessonNotes')
 @endsection
 
 <script>
@@ -249,6 +250,14 @@
     addEventListener("DOMContentLoaded", (event) => {
         const pie_chart = new ApexCharts(document.querySelector('#pie-chart'), pie_chart_options);
         pie_chart.render();
+
+        document.getElementById('showLessonNotes').addEventListener('hidden.bs.modal', function(event) {
+            $("#lesson-notes-table-spinner").fadeOut("fast");
+            $("#lesson-notes-table").fadeOut();
+
+        });
+
+
     });
 
     function generateColorArray(length) {
@@ -262,5 +271,64 @@
         }
 
         return colors;
+    }
+
+    function showNotesModal(studentId, lessonId, studentName) {
+        var myModal = new bootstrap.Modal(document.getElementById('showLessonNotes'), {
+            keyboard: false
+        })
+        var modalToggle = document.getElementById('showLessonNotes') // relatedTarget
+        myModal.show(modalToggle);
+
+        $("#lessonNotesModalTitle").text(studentName);
+        $("#lesson-notes-table-spinner").fadeIn();
+
+        $.ajax({
+            url: `/ajax/getLessonRecitationsNotes/${lessonId}/${studentId}`,
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function(data) {
+                $("#lesson-notes-table-spinner").fadeOut("fast", function() {
+                    $("#lesson-notes-table").fadeIn();
+                });
+
+                const recitations = data.data;
+                const tbody = document.getElementById('lesson-notes-row');
+                tbody.innerHTML = '';
+                if (recitations.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">لا توجد بيانات متاحة</td></tr>';
+                    return;
+                }
+                // Loop through the data and create table rows
+                recitations.forEach(recitation => {
+                    const rate = Math.round(recitation.rate) ||
+                        0; // Ensure rate is a number, default to 0
+                    let starsHtml = '';
+                    // Add filled stars
+                    for (let i = 1; i <= rate; i++) {
+                        starsHtml += '<i class="bi bi-star-fill text-warning"></i>';
+                    }
+                    // Add empty stars up to 5
+                    for (let i = rate; i < 5; i++) {
+                        starsHtml += '<i class="bi bi-star text-warning"></i>';
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${recitation.surah?.name || 'غير محدد'}</td>
+                <td>${recitation.from_verse || '-'}</td>
+                <td>${recitation.to_verse || '-'}</td>
+                <td>${starsHtml || '-'}</td>
+                <td>${recitation.notes || '-'}</td>
+            `;
+                    tbody.appendChild(row);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
     }
 </script>

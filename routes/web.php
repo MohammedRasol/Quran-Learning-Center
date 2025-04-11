@@ -51,6 +51,7 @@ Route::prefix('ajax/')->middleware('auth')->group(function () {
     Route::delete('deletRecitationById/{lesson_id}/{student_id}/{surah_id}/{recitation_id}', [LessonController::class, "deletRecitationById"])->middleware(["IsSurahInStudentRecitations"]);
     Route::put('closeLesson/{lesson_id}', [LessonController::class, "closeLesson"])->middleware(["IsShaikhInLesson"]);
     Route::post('addStudentAbsent/{lesson_id}/{student_id}', [LessonController::class, "addDeleteStudentAbsent"])->middleware(["IsShaikhInLesson","IsLessonRunning","doesStudentHaveNoRecitation"]);
+    Route::get('getLessonRecitationsNotes/{lesson_id}/{student_id}', [LessonController::class, 'getLessonRecitationsNotes'])->name("getLessonRecitationsNotes")->middleware("IsStudentInLesson");
 });
 
 Auth::routes();
