@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StudentRequest;
 use App\Models\Classroom;
 use App\Models\Student;
+use App\Models\Surah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,11 +25,17 @@ class StudentController extends Controller
         return view("studentView.studentsList", compact("students"));
     }
 
+    public function addArchives(Student $student)
+    {
+        // $surahs=Surah::groubBy()->get();
+        return view("studentView.addArchives", compact("student"));
+    }
 
-    /**
-     * 
-     * Show the form for creating a new resource.
-     */
+    public function archives(Student $student)
+    {
+        return view("studentView.studentsArchives", compact("student"));
+    }
+
     public function create()
     {
         return view("studentView.addStudent");
@@ -62,7 +69,11 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id) {}
+    public function show($id)
+    {
+        $student = Student::with("classroom")->where("id", $id)->first();
+        return view("studentView.showStudent", compact("student"));
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -82,7 +93,7 @@ class StudentController extends Controller
         $student->join_month = $arr[1];
         $student->join_day = $arr[2];
         $classrooms = Classroom::where("graduated", 0)->get();
-        return view("studentView.showStudent", compact("student", "classrooms"));
+        return view("studentView.editStudent", compact("student", "classrooms"));
     }
 
     /**

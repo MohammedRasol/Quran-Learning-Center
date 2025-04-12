@@ -65,6 +65,7 @@ class LessonController extends Controller
     }
     function openClassRoomLesson($lesson_id)
     {
+ 
         $lesson = Lesson::with(['classrooms.group.classroom', 'classrooms.students.recitations' => function ($query) use ($lesson_id) {
             $query->where('lesson_id', $lesson_id);
         }])->whereHas('classrooms')->findOrFail($lesson_id);

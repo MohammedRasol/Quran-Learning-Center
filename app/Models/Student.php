@@ -8,10 +8,10 @@ use PHPUnit\Framework\MockObject\Builder\Stub;
 class Student extends Model
 {
     protected  $table = "students";
-    protected  $fillable = ["name", "last_name", "family_name", "phone", "user_name", "birth_date", "join_date", "image", "email", "classroom"];
+    protected  $fillable = ["name", "last_name", "family_name", "phone", "user_name", "birth_date", "join_date", "image", "email", "class_room_id"];
     public function classroom()
     {
-        return $this->hasMany(Classroom::class, "id", "classroom");
+        return $this->belongsTo(Classroom::class, "class_room_id", "id");
     }
     public function recitations()
     {

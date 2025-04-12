@@ -28,7 +28,9 @@ Route::prefix('lesson/')->middleware("auth")->group(function () {
 });
 
 Route::prefix('student/')->middleware("auth")->group(function () {
-    Route::get('/list', [StudentController::class, 'tableShow'])->name("student.list");
+    Route::get('list', [StudentController::class, 'tableShow'])->name("student.list");
+    Route::get('{student}/archives', [StudentController::class, 'archives'])->name("student.archives");
+    Route::get('{student}/archives/add', [StudentController::class, 'addArchives'])->name("student.addArchives");
     Route::resource("", StudentController::class)->parameters(['' => 'id'])->names('student');
 });
 
