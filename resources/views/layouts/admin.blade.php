@@ -35,12 +35,13 @@
     {{-- <link rel="stylesheet" href="/adminlte/plugins/bootstrap/css/bootstrap.min.css"> --}}
     <!-- Font Awesome (optional) -->
     {{-- <link rel="stylesheet" href='https://fonts.googleapis.com/css2?family=Amiri&display=swap'> --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-   
+
 
 </head>
 
-<body class="layout-fixed sidebar-expand-lg bg-body-tertiary" style="overflow:auto" data-bs-theme="dark">
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary" style="overflow:auto" da ta-bs-theme="dark">
     <!--begin::App Wrapper-->
     <div class="app-wrapper">
         <!--begin::Header-->
@@ -227,7 +228,7 @@
         </nav>
         <!--end::Header-->
         <!--begin::Sidebar-->
-        <aside class="app-sidebar bg-success-dark  shadow" data-bs-theme="dark">
+        <aside class="app-sidebar bg-success-dark  shadow bg-dark" data-bs-theme="dark">
             <!--begin::Sidebar Brand-->
             <div class="sidebar-brand">
                 <!--begin::Brand Link-->
@@ -384,6 +385,8 @@
     <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('js/adminlte.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
     <script>
         const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
@@ -424,8 +427,11 @@
         cardHeaders.forEach((cardHeader) => {
             cardHeader.style.cursor = 'move';
         });
+
+        $(document).ready(function() {
+            $('select').select2({});
+
+        });
     </script>
-
-
 
 </html>

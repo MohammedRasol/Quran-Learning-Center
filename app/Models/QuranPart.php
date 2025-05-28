@@ -11,6 +11,12 @@ class QuranPart extends Model
 
     function surah()
     {
-        return $this->belongsTo(Surah::class, "id", "surah_id");
+        return $this->belongsTo(Surah::class, "surah_id", "id");
+    }
+    function getPartSurahs($partNo)
+    {
+        return Surah::select('id', 'name')
+            ->whereIn('id', QuranPart::where('part', $partNo)->pluck('surah_id'))
+            ->get();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
 use App\Models\Classroom;
+use App\Models\QuranPart;
 use App\Models\Student;
 use App\Models\Surah;
 use Illuminate\Http\Request;
@@ -27,8 +28,18 @@ class StudentController extends Controller
 
     public function addArchives(Student $student)
     {
-        // $surahs=Surah::groubBy()->get();
-        return view("studentView.addArchives", compact("student"));
+        $surahParts = QuranPart::with("surah")->get();
+        $quranParts = [];
+        $surahTmp = [];
+        foreach ($surahParts as $key => $part) {
+            if (isset($surahTmp[$part->surah_id]))
+                continue;
+            $quranParts[$part->part][] = $part;
+            $surahTmp[$part->surah_id] = $part->surah_id;
+
+        }
+        $surahs = Surah::get();
+        return view("studentView.addArchives", compact("student", "quranParts", "surahs"));
     }
 
     public function archives(Student $student)
@@ -127,11 +138,12 @@ class StudentController extends Controller
         return redirect("/student/$student->id")->with('success', 'تم حفظ معلومات الطالب');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Student $student)
+    public function getQuranPartSurahs($partId)
     {
-        //
+        $quranPart = new QuranPart();
+        $partSurahs = $quranPart->getPartSurahs($partId);
+        if (request()->ajax()) {
+            return response()->json(["data" => $partSurahs, "status" => 200], 200);
+        }
     }
 }
